@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './vitals.css'
+import axios from 'axios'
 const Vital = ()=>{
     const [isLoading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState('');
     const [vitalData, setVital] = useState([]);
     let navigator = useNavigate();
-    const handleVitals = async()=>{
-        await axios.get(`http://127.0.0.1:5000/vitals`).then((res) => {
+    async function handleVitals(){
+      await axios.get(`http://127.0.0.1:5000/vitals`).then((res) => {
       console.log(res);
       console.log(res.data);
       setVital(res.data);
@@ -52,6 +53,7 @@ const Vital = ()=>{
             <div className="scan-button">
                 <button onClick={handleVitals} id="scan-btn" className="block m-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"></button>
             </div>
+            <div>{vitalData}</div>
             </>
     ))
 
