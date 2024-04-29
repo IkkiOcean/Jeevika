@@ -12,5 +12,6 @@ body{
 }
 #scan-btn{
     /* margin: auto; */
+    margin-top: 20px;
     width: 30%;
 }

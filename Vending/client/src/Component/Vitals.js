@@ -8,10 +8,17 @@ const Vital = ()=>{
     const [vitalData, setVital] = useState([]);
     let navigator = useNavigate();
     async function handleVitals(){
+      document.getElementById('scan-btn').textContent = 'Scanning'
       await axios.get(`http://127.0.0.1:5000/vitals`).then((res) => {
-      console.log(res);
-      console.log(res.data);
+      
+      // console.log(res);
+      // console.log(res.data);
       setVital(res.data);
+      navigator('/vital-report',{
+        state: {
+          temp : res.data
+        }
+      })
     });
     }
     return(
@@ -51,7 +58,9 @@ const Vital = ()=>{
                 <img src="./hand-animation.gif" alt=""/>
             </div>
             <div className="scan-button">
-                <button onClick={handleVitals} id="scan-btn" className="block m-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"></button>
+                <button onClick={handleVitals} id="scan-btn" className="block m-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  Start Vital Scan
+                </button>
             </div>
             <div>{vitalData}</div>
             </>

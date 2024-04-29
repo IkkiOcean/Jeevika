@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 from jeevika.dispense import dispense_med
 from jeevika.models import Stock, Bill, Medicine
 from jeevika.utils import process_bill
-# from jeevika.sensor_control import startSensor
+from jeevika.sensor_control import startSensor
 # CORS(app, resources={r"dispense": {"origins": "http://localhost:5000"}},supports_credentials=True, headers=['Content-Type', 'Authorization'])
 
 
@@ -83,10 +83,12 @@ def stock(medicine_id):
 @app.route('/vitals', methods = ["GET"])
 @cross_origin()
 def get_vitals():
-    # temp = startSensor()
-    # vital_data = {
-    #     "temp" : temp
-    # }
-    return 32
+    temp = startSensor()
+    vital_data = {
+        "temp" : temp
+         
+    }
+    
+    return vital_data
 
 

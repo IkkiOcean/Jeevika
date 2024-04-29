@@ -12,6 +12,8 @@ import Scanner from "./Component/Scanner"
 import Thank from "./Component/Thank";
 import {Counter,checkStock} from "./Component/Counter";
 import Vital from "./Component/Vitals";
+import VitalReport from "./Component/vital-report";
+import Slider from "./Component/slider/slider";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -30,6 +32,14 @@ const router = createBrowserRouter([
   {
     path: "vital",
     element: <Vital />,
+  },
+  {
+    path: "vital-report",
+    element: <VitalReport />,
+  },
+  {
+    path: "slider",
+    element: <Slider />,
   },
   {
     path: "counter",

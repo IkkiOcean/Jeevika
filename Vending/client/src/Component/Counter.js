@@ -27,7 +27,7 @@ const Counter = ()=>{
       setMeds(data);
     }
     else{
-      handleSearch(searchText)
+      handleSearch(value)
     }
   }
   const handleOpen = (item) =>{
@@ -133,7 +133,7 @@ const Counter = ()=>{
       <div style={{position:'relative',backgroundColor:"#b6b5b5",boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px', zIndex:'10'}}>
         
       <h1 id='jeevika' className="text-3xl font-bold p-2 text-center ">
-      <img onClick={()=>navigator('/')}src="./backArrow.png" alt="" className="backArrow" />
+      <img onClick={()=>navigator('/')} src="./backArrow.png" alt="" className="backArrow" />
         Jeevika
       </h1>
       <div style={{ display: "flex" ,paddingBottom:'5px'}}>
@@ -146,7 +146,9 @@ const Counter = ()=>{
             style={{ width: "30%",height: '30px',borderRadius:'20px',float:'right',marginRight: '-27px',display:'inline-block',marginBottom:'5px',padding:'6px',zIndex: '4' }}
             value={searchText}
             onChange={(event) => {
+              
               handleSearchText(event.target.value);
+              console.log(event.target.value)
               
             }}
           />
