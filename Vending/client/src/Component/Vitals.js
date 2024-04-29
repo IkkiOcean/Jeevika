@@ -48,7 +48,7 @@ const Vital = ()=>{
             </h1>
             </div>
             <div className="scan-animation">
-                <img src="./scan-img.png" alt=""/>
+                <img src="./hand-animation.gif" alt=""/>
             </div>
             <div className="scan-button">
                 <button onClick={handleVitals} id="scan-btn" className="block m-auto rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"></button>
