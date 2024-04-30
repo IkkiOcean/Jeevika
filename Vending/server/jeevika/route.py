@@ -83,9 +83,15 @@ def stock(medicine_id):
 @app.route('/vitals', methods = ["GET"])
 @cross_origin()
 def get_vitals():
-    temp = startSensor()
+    temp,hr,sp = startSensor()
+    print('temp_data')
+    print(temp)
+    print('hr data')
+    print(hr)
+    print('sp data')
+    print(sp)
     vital_data = {
-        "temp" : temp
+        "temp" : 32
          
     }
     
