@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './vitals.css'
 import axios from 'axios'
@@ -15,9 +15,7 @@ const Vital = ()=>{
       // console.log(res.data);
       setVital(res.data);
       navigator('/vital-report',{
-        state: {
-          temp : res.data
-        }
+        state: res.data
       })
     });
     }

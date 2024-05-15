@@ -1,7 +1,7 @@
 from multiprocessing import Process, Value
 import RPi.GPIO as GPIO
-import max30102
-import hrcalc
+import jeevika.max30102 as max30102
+import jeevika.hrcalc as hrcalc
 GPIO.setmode(GPIO.BCM)
 
 m = max30102.MAX30102()
@@ -21,6 +21,7 @@ def startSensor():
         sp_data = Value('i',0)
         temp = Process(target=read_temp, args = (temp_data,))
         oxy = Process(target=read_oxy,args = (hr_data,sp_data,))
+        print("entered while not complete")
         try:
             if not GPIO.input(sensor):
                     print('sensor start')
@@ -57,7 +58,8 @@ def read_temp(data):
         time.sleep(5)
         print ("Ambient Temperature :", sensor.get_amb_temp())
         print ("Object Temperature :",sensor.get_obj_temp())
-        data.value = sensor.get_obj_temp()
+        tempC= int(sensor.get_obj_temp())
+        data.value = tempC
         bus.close()
         print('done')
     except:

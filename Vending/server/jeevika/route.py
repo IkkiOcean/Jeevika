@@ -4,7 +4,8 @@ from flask_cors import cross_origin
 from jeevika.dispense import dispense_med
 from jeevika.models import Stock, Bill, Medicine
 from jeevika.utils import process_bill
-from jeevika.sensor_control import startSensor
+from jeevika.gemini import getReport
+# from jeevika.sensor_control import startSensor
 # CORS(app, resources={r"dispense": {"origins": "http://localhost:5000"}},supports_credentials=True, headers=['Content-Type', 'Authorization'])
 
 
@@ -56,7 +57,7 @@ def get_data(machine_id):
     stocks = Stock.query.filter_by(machine_id = machine_id)
     data_set = []
     for stock in stocks:
-        data = {
+        data = {""
             "medicine_id" : stock.medicines.medicine_id,
             "medicine_name" : stock.medicines.medicine_name,
             "stock" : stock.stock_count,
@@ -83,18 +84,25 @@ def stock(medicine_id):
 @app.route('/vitals', methods = ["GET"])
 @cross_origin()
 def get_vitals():
-    temp,hr,sp = startSensor()
-    print('temp_data')
-    print(temp)
-    print('hr data')
-    print(hr)
-    print('sp data')
-    print(sp)
+    # temp,hr,sp = startSensor()
+    # report = getReport(temp,sp,hr)
+    # vital_data = {
+    #     "temp" : temp,
+    #     "oxygen" : sp,
+    #     "heart" : hr,
+    #     "report" : report,
+    #     }
+    report = getReport(38,97,120)
     vital_data = {
-        "temp" : 32
+        "temp" : 36,
+        "oxygen" : 97,
+        "heart" : 101,
+        "report" : report
          
     }
     
+    
+    # print(report)
     return vital_data
 
 

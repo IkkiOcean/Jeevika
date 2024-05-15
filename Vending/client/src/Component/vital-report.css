@@ -10,6 +10,7 @@ body{
     flex: 2;
     margin: 5px;
     background-color: #FFFCF8;
+    overflow: auto;
 }
 .right-grid{
     background-color: #303030;
@@ -120,9 +121,18 @@ padding: 5px;
 background-color: #F8DEBD;
 border-radius: 10px;
 }
+.vital-report-container{
+    background-color: white;
+    border-radius: 10px;
+    margin-right: 20px;
+    margin-top: 20px;
+    padding: 10px;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    
+}
 .middle-right{
     display: flex;
-    height: 200px;
+    height: 25%;
     /* width: 100%; */
     /* border: 2px yellow solid; */
 }
@@ -221,4 +231,23 @@ border-radius: 10px;
     font-style: normal;
     font-weight: 400;
     line-height: 20px;
+}
+.bmi-bottom{
+    border-top: 3px solid rgb(86, 86, 86);
+    height: 60%;
+}
+/* .bmi-bottom-left{
+    flex:1;
+    width: 45%;
+    height: 100%;
+}
+.bmi-bottom-right{
+    flex: 1;
+    display: inline-block;
+    height: 100%;
+    position: relative;
+} */
+.body-male{
+    height: 100%;
+    margin: 3% auto;
 }
