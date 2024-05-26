@@ -4,7 +4,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 // import pgPromise from 'pg-promise';
+import {load} from '@cashfreepayments/cashfree-js';
 
+let cashfree;
+var initializeSDK = async function () {          
+    cashfree = await load({
+        mode: "sandbox"
+    });
+};
+initializeSDK();
 function Scanner() {
   const [data, setData] = useState([]);
   const [isScanned, setIsScanned] = useState(false);
@@ -71,26 +79,52 @@ function Scanner() {
     totalPrice = y;
     return y;
   }
-  const handlePayment = ()=>{
+  const handleRedirect = async()=>{
     
-  }
-  const dispenseMed =async() => {
-    
-    setLoading(true);
-    setLoadingText("Dispensing Medicines");
-    console.log("Sending data to server...");
-    console.log(medicines);
-    await axios.post(`http://127.0.0.1:5000/dispense`, medicines).then((res) => {
+    const order_detail = {
+      customer_id : '12345',
+      amount : totalPrice,
+    }
+    const order  = {
+      orderDetail : order_detail,
+      medicine : medicines
+    }
+    let sessionID;
+    let orderID;
+    await axios.post(`http://127.0.0.1:5000/create-order`, order).then((res) => {
       console.log(res);
       console.log(res.data);
-      setLoading(false);
-      setIsScanned(false);
-      setMedicines([]);
-      setData([]);
-      navigator("/thank");
+      sessionID = res.data.payment_session_id;
+      orderID = res.data.order_id;
     });
 
+    let checkoutOptions = {
+      paymentSessionId: sessionID,
+      returnUrl: 'http://localhost:3000/dispense-med?id={order_id}',
+      appearance: {
+          width: "425px",
+          height: "700px",
+      },
   };
+  cashfree.checkout(checkoutOptions).then((result) => {
+      if (result.error) {
+        // This will be true when there is any error during the payment
+        console.log("There is some payment error, Check for Payment Status");
+        console.log(result.error);
+      }
+      if (result.redirect) {
+        // This will be true when the payment redirection page couldnt be opened in the same window
+        // This is an exceptional case only when the page is opened inside an inAppBrowser
+        // In this case the customer will be redirected to return url once payment is completed
+        console.log("Payment will be redirected");
+      }
+      if (result.paymentDetails) {
+        // This will be called whenever the payment is completed irrespective of transaction status
+        console.log("Payment has been completed, Check for Payment Status");
+        console.log(result.paymentDetails.paymentMessage);
+      }
+ });
+  }
   return isLoading ? (
     <div className="w-full flex justify-center flex-col items-center" style={{height:"100vh"}}>
       <div role="status">
@@ -153,7 +187,7 @@ function Scanner() {
 
         <button
           className={totalPrice>0?"mt-10 mb-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600":"mt-10 mb-10 block w-full rounded-md bg-indigo-300 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm  focus-visible:outline "}
-          onClick={dispenseMed}
+          onClick={handleRedirect}
           disabled = {!(totalPrice>0)}
         >
           Proceed to Pay

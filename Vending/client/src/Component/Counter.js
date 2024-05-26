@@ -8,6 +8,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLoaderData } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
+import {load} from '@cashfreepayments/cashfree-js';
+
+let cashfree;
+var initializeSDK = async function () {          
+    cashfree = await load({
+        mode: "sandbox"
+    });
+};
+initializeSDK();
+
 const Counter = ()=>{
   const data = useLoaderData();
   const [totalPrice,setTotalPrice] = useState(0);
@@ -54,7 +65,7 @@ const Counter = ()=>{
     setCartItems(newCart)
     setTotalPrice(totalPrice-item.amount)
   }
-  const handlePay = async()=>{
+  const handleRedirect = async()=>{
     let medicines = [];
     cartItems.forEach(item => {
       let data = 
@@ -62,16 +73,68 @@ const Counter = ()=>{
        'price': item.amount/item.qty, 'stock': item.stock}, 'qty': item.qty};
       medicines.push(data)
     });
-    setLoading(true);
-    setLoadingText("Dispensing Medicines");
-    console.log("Sending data to server...");
-    await axios.post(`http://127.0.0.1:5000/dispense`, medicines).then((res) => {
+    const order_detail = {
+      customer_id : '12345',
+      amount : totalPrice,
+    }
+    const order  = {
+      orderDetail : order_detail,
+      medicine : medicines
+    }
+    let sessionID;
+    let orderID;
+    await axios.post(`http://127.0.0.1:5000/create-order`, order).then((res) => {
       console.log(res);
       console.log(res.data);
-      setLoading(false);
-      navigator("/thank");
+      sessionID = res.data.payment_session_id;
+      orderID = res.data.order_id;
     });
+
+    let checkoutOptions = {
+      paymentSessionId: sessionID,
+      returnUrl: 'http://localhost:3000/dispense-med?id={order_id}',
+      appearance: {
+          width: "425px",
+          height: "700px",
+      },
+  };
+  cashfree.checkout(checkoutOptions).then((result) => {
+      if (result.error) {
+        // This will be true when there is any error during the payment
+        console.log("There is some payment error, Check for Payment Status");
+        console.log(result.error);
+      }
+      if (result.redirect) {
+        // This will be true when the payment redirection page couldnt be opened in the same window
+        // This is an exceptional case only when the page is opened inside an inAppBrowser
+        // In this case the customer will be redirected to return url once payment is completed
+        console.log("Payment will be redirected");
+      }
+      if (result.paymentDetails) {
+        // This will be called whenever the payment is completed irrespective of transaction status
+        console.log("Payment has been completed, Check for Payment Status");
+        console.log(result.paymentDetails.paymentMessage);
+      }
+ });
   }
+  // const handlePay = async()=>{
+  //   let medicines = [];
+  //   cartItems.forEach(item => {
+  //     let data = 
+  //     {'isAvailable': true, 'data': {'medicine_id': item.medicine_id, 'medicine_name': item.medicine_name,
+  //      'price': item.amount/item.qty, 'stock': item.stock}, 'qty': item.qty};
+  //     medicines.push(data)
+  //   });
+  //   setLoading(true);
+  //   setLoadingText("Dispensing Medicines");
+  //   console.log("Sending data to server...");
+  //   await axios.post(`http://127.0.0.1:5000/dispense`, medicines).then((res) => {
+  //     console.log(res);
+  //     console.log(res.data);
+  //     setLoading(false);
+  //     navigator("/thank");
+  //   });
+  // }
   const handleButtonChange = (id)=>{
     var addButton = document.getElementById(`add-to-cart-${id}`)
     if(addButton.textContent == 'Add to Cart'){
@@ -225,7 +288,7 @@ const Counter = ()=>{
               </div>
               <div className="bottom-bar-area-right">
                 <h1>Total Amount : ₹{totalPrice}</h1>
-                <button onClick={handlePay}disabled={!(totalPrice>0)} id='pay' className={totalPrice>0?"block w-full rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600":"block w-full rounded-md bg-green-300 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm  focus-visible:outline "}>Proceed to pay</button>
+                <button onClick={handleRedirect}disabled={!(totalPrice>0)} id='pay' className={totalPrice>0?"block w-full rounded-md bg-green-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600":"block w-full rounded-md bg-green-300 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm  focus-visible:outline "}>Proceed to pay</button>
                 </div>
             
             

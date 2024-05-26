@@ -2,7 +2,7 @@ from flask import Flask, request,jsonify
 from jeevika import app, db
 from flask_cors import cross_origin
 from jeevika.dispense import dispense_med
-from jeevika.models import Stock, Bill, Medicine
+from jeevika.models import Stock, Bill, Medicine, Order
 from jeevika.utils import process_bill
 from jeevika.gemini import getReport
 # from jeevika.sensor_control import startSensor
@@ -18,16 +18,16 @@ def handle_medicine():
     item_list = []
     print(data)
     for meds in data:
-        med = Medicine.query.filter_by(medicine_id = meds['data']['medicine_id']).first()
+        med = Medicine.query.filter_by(medicine_id = meds['medicine_id']).first()
         stock = Stock.query.filter_by(medicine = med.medicine_id).first()
         try:
-            dispense_med(med.medicine_id, stock.address, meds['qty'])
-            print(f"{meds['qty']} {med.medicine_name} dispensed\n")
+            dispense_med(med.medicine_id, stock.address, meds['quantity'])
+            print(f"{meds['quantity']} {med.medicine_name} dispensed\n")
             stock.stock_count -= meds['qty']
             db.session.commit()
             item = {
                 "medicine_name" : stock.medicines.medicine_name,
-                "stock" : meds['qty'],
+                "stock" : meds['quantity'],
                 "price" : stock.medicines.price,
             }
             item_list.append(item)
@@ -92,7 +92,7 @@ def get_vitals():
     #     "heart" : hr,
     #     "report" : report,
     #     }
-    report = getReport(38,97,120)
+    report = getReport(40,97,120)
     vital_data = {
         "temp" : 36,
         "oxygen" : 97,
@@ -104,5 +104,73 @@ def get_vitals():
     
     # print(report)
     return vital_data
+
+from cashfree_pg.models.create_order_request import CreateOrderRequest
+from cashfree_pg.api_client import Cashfree
+from cashfree_pg.models.customer_details import CustomerDetails
+from cashfree_pg.models.order_meta import OrderMeta
+
+Cashfree.XClientId = "TEST10198495e07a6b117a8e0896e4ab59489101"
+Cashfree.XClientSecret = "cfsk_ma_test_8265d1ffb19d223b33d38d8df367862d_e67ab70f"
+Cashfree.XEnvironment = Cashfree.SANDBOX
+x_api_version = "2023-08-01"
+
+
+@app.route('/create-order', methods = ["POST"])
+@cross_origin()
+def create_order():
+        order = request.get_json()
+        # print(order)
+        obj = db.session.query(Order).order_by(Order.id.desc()).first()
+        if obj == None:
+            order_id = 1
+        else:
+            order_id = obj.id + 1
+        medicine_id = []
+        medicine_qty = []
+        for meds in order['medicine']:
+            medicine_id.append(meds['data']['medicine_id'])
+            medicine_qty.append(meds['qty'])
+        orderDB = Order(order_id = f'Order-{str(order_id)}', medicine_id = medicine_id, quantity = medicine_qty)
+        db.session.add(orderDB)
+        db.session.commit()
+        
+        customerDetails = CustomerDetails(customer_id=order['orderDetail']['customer_id'], customer_phone="9116532218")
+
+        createOrderRequest = CreateOrderRequest(order_id=f'Order-{str(order_id)}', order_amount=order['orderDetail']['amount'], order_currency="INR", customer_details=customerDetails)
+
+        orderMeta = OrderMeta()
+        orderMeta.return_url = "https://www.cashfree.com/devstudio/preview/pg/web/checkout?order_id={order_id}";
+        createOrderRequest.order_meta = orderMeta
+
+        try:
+            api_response = Cashfree().PGCreateOrder(x_api_version, createOrderRequest, None, None)
+            response = {
+                'payment_session_id' : api_response.data.payment_session_id,
+                'order_id' : api_response.data.order_id
+            }
+            print(api_response.data)
+            # type(api_response.data)
+            return response , 200
+        except Exception as e:
+            print(e)
+            # return "error" , 404
+        return "done", 200
+
+@app.route('/fetch-order')
+@cross_origin()
+def fetch_order():
+    print("hello")
+    order_id = request.args.get('id')
+    order = db.session.query(Order).filter(Order.order_id == order_id).first()
+    print(order)
+    orderDetail = {
+        'order_id' : order.order_id,
+        'medicine_id' : order.medicine_id,
+        'quantity' : order.quantity
+    }
+    print(orderDetail)
+    return orderDetail,200
+
 
 

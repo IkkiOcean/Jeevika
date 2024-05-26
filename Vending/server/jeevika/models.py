@@ -23,6 +23,17 @@ class Stock(db.Model):
     def __repr__(self):
         return f"Stock('{self.medicine.medicine_id}', '{self.stock_count}', '{self.address}')"
 
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.String(120), unique = True, nullable = False)
+    medicine_id = db.Column(db.ARRAY(db.Integer), unique=False, nullable=False)
+    quantity = db.Column(db.ARRAY(db.Integer), nullable=False)
+    # __table_args__ = (db.UniqueConstraint('machine_id','address'),)
+    # medicine = db.Column(db.Integer, db.ForeignKey('medicine.id'), nullable =  False)
+
+    def __repr__(self):
+        return f"Order('{self.id}', '{self.medicine_id}', '{self.quantity}')"
+
 
 class Bill(db.Model):
     id = db.Column(db.Integer, primary_key=True)

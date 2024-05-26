@@ -10,6 +10,7 @@ import {
 import Home from "./Home";
 import Scanner from "./Component/Scanner"
 import Thank from "./Component/Thank";
+import Dispense from "./Component/dispense";
 import {Counter,checkStock} from "./Component/Counter";
 import Vital from "./Component/Vitals";
 import VitalReport from "./Component/vital-report";
@@ -42,12 +43,17 @@ const router = createBrowserRouter([
     element: <Slider />,
   },
   {
+    path: "dispense-med",
+    element: <Dispense />,
+  },
+  {
     path: "counter",
     loader: checkStock,
     element: 
       <Counter />
     ,
-  },
+  }
+  ,
 ]);
 
 createRoot(document.getElementById("root")).render(
