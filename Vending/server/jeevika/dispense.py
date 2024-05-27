@@ -2,12 +2,12 @@
 import time
 
 
-raspberry_map = [(1,11),(2,13),(3,15),(4,29),(5,31),(6,37),(7,36),(8,22),(9,18),(10,16)]
+raspberry_map = [(1,11),(2,13),(3,15),(4,29)]
 
 
 
 def dispense_med(medicine_id, address, quantity):
-        # GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BCM)
         
 
         for i in range(quantity):

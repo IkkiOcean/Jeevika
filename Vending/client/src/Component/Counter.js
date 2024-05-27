@@ -233,11 +233,12 @@ const Counter = ()=>{
       <div className="container-fluid px-5">
       <ul className="cardList">
           {meds.map((item, index) => {
+            
             return (
               <>
               <li className="card">
                 <div className="card-body">
-                  <img src="./../medicine.jpg" alt="" width={'270px'} className="med-image" />
+                  <img src={`/med-images/image_${item.medicine_id}.jpg`} alt="" width={'270px'} className="med-image" />
                   <div className="card-bottom">
                   <h1 className="med-name">{item.medicine_name}</h1>
                   <h3 className="stock">Available : {item.stock}</h3>

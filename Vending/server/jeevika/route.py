@@ -5,7 +5,8 @@ from jeevika.dispense import dispense_med
 from jeevika.models import Stock, Bill, Medicine, Order
 from jeevika.utils import process_bill
 from jeevika.gemini import getReport
-# from jeevika.sensor_control import startSensor
+import base64
+from jeevika.sensor_control import startSensor
 # CORS(app, resources={r"dispense": {"origins": "http://localhost:5000"}},supports_credentials=True, headers=['Content-Type', 'Authorization'])
 
 
@@ -61,7 +62,8 @@ def get_data(machine_id):
             "medicine_id" : stock.medicines.medicine_id,
             "medicine_name" : stock.medicines.medicine_name,
             "stock" : stock.stock_count,
-            "price" : stock.medicines.price
+            "price" : stock.medicines.price,
+            "image" : stock.medicines.image
         }
         data_set.append(data)
     return data_set
@@ -84,22 +86,22 @@ def stock(medicine_id):
 @app.route('/vitals', methods = ["GET"])
 @cross_origin()
 def get_vitals():
-    # temp,hr,sp = startSensor()
-    # report = getReport(temp,sp,hr)
-    # vital_data = {
-    #     "temp" : temp,
-    #     "oxygen" : sp,
-    #     "heart" : hr,
-    #     "report" : report,
-    #     }
-    report = getReport(40,97,120)
+    temp,hr,sp = startSensor()
+    report = getReport(temp,sp,hr)
     vital_data = {
-        "temp" : 36,
-        "oxygen" : 97,
-        "heart" : 101,
-        "report" : report
+        "temp" : temp,
+        "oxygen" : sp,
+        "heart" : hr,
+        "report" : report,
+        }
+    # report = getReport(40,97,120)
+    # vital_data = {
+    #     "temp" : 36,
+    #     "oxygen" : 97,
+    #     "heart" : 101,
+    #     "report" : report
          
-    }
+    # }
     
     
     # print(report)
@@ -172,5 +174,30 @@ def fetch_order():
     print(orderDetail)
     return orderDetail,200
 
+@app.route('/database', methods = ["GET"])
+@cross_origin()
+def database():
+    # medicines = ['Crocin','Disprin','Vicks Action 500','Saridon','Dolo 650','Calpol 650','Omez','Digene']
+    # price = [20,13,58,47,34,30,64,27]
+    # for i in range(1,9):
+    #     with open(f'/Volumes/Vivek Drive/Project/heisenberg_project/Vending/server/jeevika/med-images/image_{i}.jpg', 'rb') as f:
+    #         image_data = f.read()
+    #     base64_string = base64.encodebytes(image_data)
+    #     print(base64_string)
+    #     medicine = Medicine(medicine_id = i,medicine_name = medicines[i-1], price = price[i-1], image= base64_string )
+    #     db.session.add(medicine)
+    #     db.session.commit()
+    for i in range (1,9):
+        medicine = Medicine.query.filter_by(medicine_id = i).first()
+        print(medicine.medicine_id)
+    return "done",200
+    # med = Medicine.query.filter_by(medicine_id = meds['medicine_id']).first()
 
-
+@app.route('/update_machine_data',methods = ['GET'])
+def add_data2():
+        for i in range(1,9):
+            med = Medicine.query.filter_by(medicine_id = i).first()
+            stock1 = Stock(machine_id = 1,medicines = med, stock_count= 100,address = i )
+            db.session.add(stock1)
+            db.session.commit()
+        return "success", 200

@@ -9,6 +9,7 @@ class Medicine(db.Model):
     medicine_id = db.Column(db.Integer, unique=True, nullable=False)
     medicine_name = db.Column(db.String(120), unique=True, nullable=False)
     price = db.Column(db.Integer,nullable = False)
+    image = db.Column(db.String,nullable = True)
     machines = db.relationship('Stock', backref = 'medicines', lazy = True)
     
 
