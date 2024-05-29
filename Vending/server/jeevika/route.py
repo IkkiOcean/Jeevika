@@ -6,7 +6,7 @@ from jeevika.models import Stock, Bill, Medicine, Order
 from jeevika.utils import process_bill
 from jeevika.gemini import getReport
 import base64
-from jeevika.sensor_control import startSensor
+# from jeevika.sensor_control import startSensor
 # CORS(app, resources={r"dispense": {"origins": "http://localhost:5000"}},supports_credentials=True, headers=['Content-Type', 'Authorization'])
 
 
@@ -24,7 +24,7 @@ def handle_medicine():
         try:
             dispense_med(med.medicine_id, stock.address, meds['quantity'])
             print(f"{meds['quantity']} {med.medicine_name} dispensed\n")
-            stock.stock_count -= meds['qty']
+            stock.stock_count -= meds['quantity']
             db.session.commit()
             item = {
                 "medicine_name" : stock.medicines.medicine_name,
@@ -86,22 +86,22 @@ def stock(medicine_id):
 @app.route('/vitals', methods = ["GET"])
 @cross_origin()
 def get_vitals():
-    temp,hr,sp = startSensor()
-    report = getReport(temp,sp,hr)
-    vital_data = {
-        "temp" : temp,
-        "oxygen" : sp,
-        "heart" : hr,
-        "report" : report,
-        }
-    # report = getReport(40,97,120)
+    # temp,hr,sp = startSensor()
+    # report = getReport(temp,sp,hr)
     # vital_data = {
-    #     "temp" : 36,
-    #     "oxygen" : 97,
-    #     "heart" : 101,
-    #     "report" : report
+    #     "temp" : temp,
+    #     "oxygen" : sp,
+    #     "heart" : hr,
+    #     "report" : report,
+    #     }
+    report = getReport(40,97,120)
+    vital_data = {
+        "temp" : 36,
+        "oxygen" : 97,
+        "heart" : 101,
+        "report" : report
          
-    # }
+    }
     
     
     # print(report)

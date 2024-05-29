@@ -2,8 +2,8 @@
 import time
 
 
-raspberry_map = [(1,11),(2,13),(3,15),(4,29)]
-
+raspberry_map = [(1,17),(2,23),(3,24),(4,6)]
+input_pin = [27,22,16,5]
 
 
 def dispense_med(medicine_id, address, quantity):
@@ -16,12 +16,13 @@ def dispense_med(medicine_id, address, quantity):
                 print(pin)
                 # GPIO.setup(pin,GPIO.OUT)
                 # GPIO.output(pin, GPIO.HIGH)
-                # time.sleep(10)
-                # GPIO.output(pin, GPIO.LOW)
-                # time.sleep(5)
+                # time.sleep(1)
+                # while(GPIO.input(input_pin[address-1]) == GPIO.LOW):
+                #      print("dispensing")
+                # print("dispensed successfully!")
+                # time.sleep(1)
                 
             except Exception as e:
-                print(e)
                 raise e
         # GPIO.cleanup()
         
