@@ -16,13 +16,23 @@ def dispense_med(medicine_id, address, quantity):
                 print(pin)
                 # GPIO.setup(pin,GPIO.OUT)
                 # GPIO.output(pin, GPIO.HIGH)
-                # time.sleep(1)
-                # while(GPIO.input(input_pin[address-1]) == GPIO.LOW):
-                #      print("dispensing")
+                # start = time.time()
+                # time.sleep(0.05)
+                # GPIO.output(pin,GPIO.LOW)
+                # while True:
+                #     curr = time.time()
+                #     if(GPIO.input(input_pin[address-1]) == GPIO.HIGH):
+                #         print("dispensed")
+                #         break
+                #     if (start - time.time() > 3):
+                #         raise e
+                #         break
+
                 # print("dispensed successfully!")
-                # time.sleep(1)
+                # GPIO.cleanup()
+                # time.sleep(0.5)
                 
             except Exception as e:
                 raise e
-        # GPIO.cleanup()
+        
         
