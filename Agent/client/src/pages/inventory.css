@@ -1,0 +1,29 @@
+.container{
+    height: 100vh;
+    background-color: white;
+}
+.header{
+    width: 100%;
+    height: fit-content;
+    background-color: black;
+    color: white;
+}
+.heading{
+
+    width: fit-content;
+    margin: auto;
+    padding: 10px;
+}
+.searchBar{
+    margin: 10px;
+}
+.search-icon{
+    position: relative;
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    /* margin-top: 5px; */
+    /* float: right; */
+    /* margin-right: -10px; */
+    z-index: 8;
+}
