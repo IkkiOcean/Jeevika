@@ -6,6 +6,15 @@ from jeevika.models import Stock, Bill, Medicine, Order
 from jeevika.utils import process_bill
 from jeevika.gemini import getReport
 import base64
+from cashfree_pg.models.create_order_request import CreateOrderRequest
+from cashfree_pg.api_client import Cashfree
+from cashfree_pg.models.customer_details import CustomerDetails
+from cashfree_pg.models.order_meta import OrderMeta
+
+Cashfree.XClientId = "TEST10198495e07a6b117a8e0896e4ab59489101"
+Cashfree.XClientSecret = "cfsk_ma_test_8265d1ffb19d223b33d38d8df367862d_e67ab70f"
+Cashfree.XEnvironment = Cashfree.SANDBOX
+x_api_version = "2023-08-01"
 # from jeevika.sensor_control import startSensor
 # CORS(app, resources={r"dispense": {"origins": "http://localhost:5000"}},supports_credentials=True, headers=['Content-Type', 'Authorization'])
 
@@ -107,15 +116,7 @@ def get_vitals():
     # print(report)
     return vital_data
 
-from cashfree_pg.models.create_order_request import CreateOrderRequest
-from cashfree_pg.api_client import Cashfree
-from cashfree_pg.models.customer_details import CustomerDetails
-from cashfree_pg.models.order_meta import OrderMeta
 
-Cashfree.XClientId = "TEST10198495e07a6b117a8e0896e4ab59489101"
-Cashfree.XClientSecret = "cfsk_ma_test_8265d1ffb19d223b33d38d8df367862d_e67ab70f"
-Cashfree.XEnvironment = Cashfree.SANDBOX
-x_api_version = "2023-08-01"
 
 
 @app.route('/create-order', methods = ["POST"])
