@@ -2,7 +2,7 @@ from flask import Flask, request,jsonify, render_template, url_for, redirect, fl
 from jeevika_agent import app, db, mail, bcrypt
 from flask_cors import cross_origin
 # from flask_login import login_user, current_user, logout_user, login_required
-from jeevika_agent.models import Agent, Medicine
+from jeevika_agent.models import Agent, Medicine, Patient
 from jeevika_agent.form import InventoryForm, LoginForm, UpdateAccountForm, RequestResetForm,ResetPasswordForm
 from flask_mail import Message
 
@@ -19,6 +19,37 @@ def fetch_data(machine_id):
             "medicine" : "okay"
     }
     return data_set
+
+@app.route('/fetch_medicine_name', methods = ['GET'])
+@cross_origin()
+def fetch_medname():
+        meds = Medicine.query.all()
+        med_list = []
+        for med in meds:
+               med_dict = {
+                      'id': med.medicine_id,
+                      'name': med.medicine_name
+                      }
+               med_list.append(med_dict)
+        return jsonify(med_list)
+
+@app.route('/fetch_patientlist', methods = ['GET'])
+@cross_origin()
+def fetch_patname():
+        patients = Patient.query.all()
+        patient_list = []
+        for patient in patients:
+                patient_dict = {
+                'id': patient.id,
+                'name': patient.name,
+                'sex': patient.sex,
+                'dob': patient.dob,
+                'mobile': patient.mobile
+                }
+                patient_list.append(patient_dict)
+        return jsonify(patient_list)
+
+
 # @app.route('/update_machine',methods = ['POST','GET'])
 
 # def add_data():
@@ -138,10 +169,18 @@ def fetch_data(machine_id):
 
 # register
 @app.route('/add_medicine',methods = ['POST'])
-def add_data3():
+def add_data2():
         data = request.get_json()
-        med = Medicine(medicine_id = data['medicine_id'],medicine_name = data['medicine_name'], price = data['price'] )
+        med = Medicine(medicine_id = data['medicine_id'],medicine_name = data['medicine_name'], price = data['price'], tablets = data['tablet'], non_tablet = data['non_tablet'], quantity = data['quantity'] )
         db.session.add(med)
+        db.session.commit()
+        return "success",200
+
+@app.route('/add_patient',methods = ['POST'])
+def add_data4():
+        data = request.get_json()
+        pat = Patient(patient_id = data['id'],name = data['name'], sex = data['sex'], dob = data['dob'], mobile = data['mobile'])
+        db.session.add(pat)
         db.session.commit()
         return "success",200
    

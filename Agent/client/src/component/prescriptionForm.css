@@ -98,4 +98,7 @@
     img{
         width: 1.5rem;
     }
+    :hover{
+        cursor: pointer;
+    }
 }

@@ -13,16 +13,30 @@ class Medicine(db.Model):
     medicine_id = db.Column(db.Integer, unique=True, nullable=False)
     medicine_name = db.Column(db.String(120), unique=True, nullable=False)
     price = db.Column(db.Integer,nullable = False)
+    tablets = db.Column(db.Integer,nullable = True)
+    non_tablet = db.Column(db.Boolean, nullable = True, default= False)
+    quantity = db.Column(db.Integer, nullable = True)
     machines = db.relationship('Stock', backref = 'medicines', lazy = True)
-    
-class Pateint(db.Model):
+class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    pateint_id = db.Column(db.Integer, unique=True, nullable=False)
+    machine_id = db.Column(db.Integer, unique = False, nullable = False)
+    stock_count = db.Column(db.Integer, unique=False, nullable=False)
+    address = db.Column(db.Integer, nullable=False)
+    expire = db.Column(db.DateTime, nullable=False)
+    __table_args__ = (db.UniqueConstraint('machine_id','address'),)
+    medicine = db.Column(db.Integer, db.ForeignKey('medicine.id'), nullable =  False)
+
+    def __repr__(self):
+        return f"Stock('{self.medicine.medicine_id}', '{self.stock_count}', '{self.address}')"
+
+
+class Patient(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, unique=True, nullable=False)
     name = db.Column(db.String(120), unique=True, nullable=False)
-    age = db.Column(db.Integer, nullable=False)
     sex = db.Column(db.Boolean, nullable=False)
     dob = db.Column(db.DateTime, nullable=False, default=datetime.now)
-
+    mobile = db.Column(db.String(10), nullable= False)
 class Agent(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)

@@ -21,13 +21,6 @@ function Scanner() {
   const [loadingText, setLoadingText] = useState('');
   let totalPrice = 0;
   const navigator = useNavigate();
-  // const [db,setDb] = useState();
-  // const pgp = pgPromise();
-  // useEffect(async ()=>{
-  //   setDb(pgp("postgres://krxmponu:zbLGjLvtTfw66wbbQFZ5ShvUgGIVFjpm@john.db.elephantsql.com/krxmponu"));
-  //   const data = await db.any('SELECT * FROM stock');
-  //   console.log(data);
-  // },[])
   console.log("start");
   
 

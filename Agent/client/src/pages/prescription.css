@@ -92,6 +92,10 @@
     border-radius: 10px;
     display: flex;
     flex-flow: row wrap;
+    
+}
+.patient-card:hover{
+    cursor: pointer;
 }
 .patient-profile{
     flex: 15%;

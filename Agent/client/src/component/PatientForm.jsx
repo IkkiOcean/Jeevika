@@ -1,5 +1,6 @@
 import "../pages/prescription.css";
 import "./patientForm.css";
+import PrescriptionTemplate from './PrescriptionTemplate';
 import dayjs from "dayjs";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
