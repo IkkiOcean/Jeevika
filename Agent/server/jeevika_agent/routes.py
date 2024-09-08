@@ -10,7 +10,6 @@ import img2pdf
 from PIL import Image
 import os
 
-
 @app.route('/fetch_data/<int:machine_id>', methods = ['GET'])
 @cross_origin()
 def fetch_data(machine_id):
@@ -91,13 +90,21 @@ def upload_pdf():
         }
         bucket_name = 'jeevika'
         url = f'https://aso3oaabz6.execute-api.eu-north-1.amazonaws.com/put/{bucket_name}/{path}'
-
-        response = requests.put(url, data=file,headers=headers)
-
-        if response.status_code == 200:
-            return 'PDF uploaded successfully!',200
-        else:
-            return 'Error uploading PDF', 500
+        try:
+              
+                response = requests.put(url, data=file,headers=headers)
+        except Exception as e:
+              return 'Error uploading PDF', 500
+        patient = {
+              'date': data['date'],
+              'mobile' : data['mobile'],
+              'name' : data['name'],
+              'path' : path
+        }
+        pres_response = sendPrescription(patient)
+        print("hello")
+        
+        return "successfull", 200
     except Exception as e:
         print(e)
         return 'Error uploading PDF', 500
@@ -251,3 +258,29 @@ def add_data2():
 #             db.session.commit()
 #             print(f'Your account has been created for {username}. You can now login!', 'success')
             
+import requests
+import vonage
+
+def sendPrescription(patient):
+        message = f"""
+Hello {patient['name']},
+Thank you for your visit today! Your prescription is now available.
+Access Your Prescription: https://jeevika.s3.eu-north-1.amazonaws.com/{patient['path']}
+Take care and get well soon!
+Warm regards,  
+Jeevika
+"""
+        client = vonage.Client(key="f3089296", secret="P7GCpDlnhMovkuOt")
+        sms = vonage.Sms(client)
+        responseData = sms.send_message(
+        {
+                "from": "Vonage APIs",
+                "to": "91"+patient['mobile'],
+                "text": message,
+        }
+        )
+
+        if responseData["messages"][0]["status"] == "0":
+                print("Message sent successfully.")
+        else:
+                print(f"Message failed with error: {responseData['messages'][0]['error-text']}")

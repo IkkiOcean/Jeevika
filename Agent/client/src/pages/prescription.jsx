@@ -57,6 +57,7 @@ const Prescription = () => {
               onChange={(event) => {
                 handleSearchText(event.target.value);
                 console.log(event.target.value);
+                console.log(patientList)
               }}
             />
             <img src="./searchIcon.png" alt="" className="search-icon" />

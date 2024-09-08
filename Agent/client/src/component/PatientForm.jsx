@@ -2,7 +2,6 @@ import "../pages/prescription.css";
 import "./patientForm.css";
 import axios from "axios";
 import { TextareaAutosize } from "@mui/material";
-import { loadPriscription } from "../pages/prescription";
 import dayjs from "dayjs";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -26,6 +25,7 @@ const PatientForm = ({setAddPatient, setToggleNew, setPatient,patientList, setPa
     
   }, [patientList]);
   const handleSubmit = async () => {
+    let new_patient_dict;
     try {
       const data = {
         "name": name,
@@ -38,10 +38,18 @@ const PatientForm = ({setAddPatient, setToggleNew, setPatient,patientList, setPa
           'Content-Type': 'application/json'
         }
       });
-      console.log(response.data.id);
       if (response.status === 200) {
-
-        setPatientList([...patientList, response.data.id]) 
+        console.log("response")
+        console.log(response.data.id);
+        new_patient_dict = {
+          'id': response.data.id.patient_id,
+          'name': response.data.id.name,
+          'sex': response.data.id.sex,
+          'dob': response.data.id.dob,
+          'mobile': response.data.id.mobile
+          }
+        //  console.log(response.data.id)
+        setPatientList([...patientList, new_patient_dict]) 
         
         setPatient(response.data.id.patient_id)
         setAddPatient(false);
@@ -52,6 +60,9 @@ const PatientForm = ({setAddPatient, setToggleNew, setPatient,patientList, setPa
     } catch (error) {
       console.error(error);
       alert("Network error. Please try again later.");
+    }
+    finally{
+
     }
   }
   return (

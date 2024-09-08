@@ -36,10 +36,8 @@ const PrescriptionTemplate = () => {
      const pdfImage= await html2canvas(input)
   .then((canvas) => {
     const imgData = canvas.toDataURL('image/png');
-    console.log(imgData)
     return imgData.split(';base64,')[1];
   })
-  console.log(pdfImage)
   return pdfImage
 ;
     }
@@ -50,11 +48,13 @@ const PrescriptionTemplate = () => {
   useEffect(() => {
     const generatePdfAndUpload = async () => {
       const pdfImage = await generatePdf();
-      console.log(pdfImage)
+      console.log(data.patientId)
       const dat = {
         "img" : pdfImage,
         "patientId": data.patientId,
-        "date": data.date
+        "date": data.date,
+        "name" : data.patientName,
+        "mobile" : data.patientMobile
       };
       try {
         const response = await axios.post(`http://127.0.0.1:5000/upload_pdf`, dat
