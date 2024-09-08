@@ -3,16 +3,17 @@
     min-height: 100vh;
     width: 100%;
     
-    background-color: #ff5956;
+    background: linear-gradient(90deg, rgba(26,26,26,1) 0%, rgba(41,41,41,1) 100%);
 }
 .patient-list-1{
     flex: 1;
-    background-color: #ff5956;
+    /* background-color: #1A1A1A; */
     
     width: 100%;
 }
 .patient-inner{
-    margin: 10%;
+    margin: 1rem;
+    padding-left: 1rem;
 }
 .add-patient{
     
@@ -24,6 +25,8 @@
     border-radius: 20px;
     justify-content: center;
     align-items: center;
+    background: none;
+    border: 2px #6A00FF solid;
     h1{
         display: inline-block;
         margin: auto;
@@ -43,7 +46,7 @@
     
 }
 .add-patient:hover{
-        background-color: #115872;
+        /* background-color: white; */
         cursor: pointer;
         h1{
             color: white;
@@ -60,6 +63,7 @@
 }
 .patient-list-header h1{
     margin-bottom: 7px;
+    color: white;
     font-size: 20px;
     font-weight: 700;
 }
@@ -78,20 +82,22 @@
     
     padding: 10px 15px 15px 15px;
     border-radius: 20px;
-    height: 80vh;
+    height: 50vh;
     overflow: auto;
-    background-color: #115872;
+    background-color: #404040;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgb(209, 213, 219) 0px 0px 0px 1px inset;}
 .patient-card{
     min-width: fit-content;
     border-bottom: 1px solid grey;
     height: fit-content;
     padding: 5px;
-    background-color: white;
+    background: linear-gradient(90deg, rgba(106,0,255,1) 10%, rgba(166,74,255,1) 100%);;
+
     margin-top: 10px;
     border-radius: 10px;
     display: flex;
     flex-flow: row wrap;
+    color: white;
     
 }
 .patient-card:hover{
@@ -108,6 +114,8 @@
     }
 }
 .patient-info{
+    border-left: 2px #1A1A1A solid;
+    padding-left: 0.5rem;
     flex: 60%;
 }
 .patient-name{
@@ -117,28 +125,38 @@
 .patient-number{
     display: block;
     font-size: 10px;
-    color: grey;
+    color: whitesmoke;
     line-height: 0%;
 }
 .prescription-area{
     flex:3;
     min-height: fit-content;
-    background: #f2f1f6;
+    /* background: #1A1A1A; */
     border-radius: 50px 0px 0px 50px;
+    border-left: 1px solid  white;
 }
 .centre-div{
     width: 85%;
     min-height: fit-content;
     margin: auto;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
-    background-color: #FFF8EA;
+    background: #404040;
     padding: 1rem;
-    padding-top: 0rem;
+    
     border-radius: 20px;
     margin-bottom: 0.5rem;
+    color: white;
+    padding-left: 1rem;
+    padding-left: calc(1rem + 10px);
+    background-image: linear-gradient(to right, #6A00FF, #6A00FF);
+    background-size: 10px 100%;
+    background-repeat: no-repeat;
+    padding-top: 0rem;
 }
 .pres-top{
-    background-color: #ff5956;
+    margin-top: 2rem;
+    background: linear-gradient(90deg, rgba(106,0,255,1) 10%, rgba(166,74,255,1) 100%);;
+    margin-bottom: 1rem;
 }
 .prescription-top{
     display: flex;
@@ -196,8 +214,8 @@
 }
 
 .gi-heading{
-    padding-top: 2rem;
-    font-weight: 500;
+    padding-top: 1rem;
+    font-weight: 600;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid rgb(204, 204, 204);
     margin: 0;

@@ -5,11 +5,12 @@ from datetime import datetime
 
 
 class Medicine(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    medicine_id = db.Column(db.Integer, unique=True, nullable=False)
+    medicine_id = db.Column(db.Integer, primary_key=True)
     medicine_name = db.Column(db.String(120), unique=True, nullable=False)
     price = db.Column(db.Integer,nullable = False)
-    image = db.Column(db.String,nullable = True)
+    tablets = db.Column(db.Integer,nullable = True)
+    non_tablet = db.Column(db.Boolean, nullable = True, default= False)
+    quantity = db.Column(db.Integer, nullable = True)
     machines = db.relationship('Stock', backref = 'medicines', lazy = True)
     
 
@@ -18,9 +19,9 @@ class Stock(db.Model):
     machine_id = db.Column(db.Integer, unique = False, nullable = False)
     stock_count = db.Column(db.Integer, unique=False, nullable=False)
     address = db.Column(db.Integer, nullable=False)
+    expire = db.Column(db.DateTime, nullable=True)
     __table_args__ = (db.UniqueConstraint('machine_id','address'),)
-    medicine = db.Column(db.Integer, db.ForeignKey('medicine.id'), nullable =  False)
-
+    medicine = db.Column(db.Integer, db.ForeignKey('medicine.medicine_id'), nullable =  False)
     def __repr__(self):
         return f"Stock('{self.medicine.medicine_id}', '{self.stock_count}', '{self.address}')"
 

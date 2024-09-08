@@ -1,0 +1,38 @@
+.patient-form{
+    margin-top: 2rem;
+}
+.input-field {
+    width: 9rem;
+    max-width: fit-content; 
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: #00829b;
+  }
+.submit-patient{
+    background-color: #00E5FF;
+    display: flex;
+    padding: 0.25rem;
+    margin: 1rem auto 0rem;
+    width: 20%;
+    border-radius:20px;
+    justify-content: center;
+    align-items: center;
+    :hover{
+        cursor: pointer;
+    }
+    
+    img{
+        flex: 1/2;
+        position: relative;
+        float: right;
+        width: 1.25rem;
+        margin-left: auto;
+    }
+    h2{
+        flex: 1/2;
+        margin-right: auto;
+        margin-bottom: 0px;
+        margin-top: 0px;
+    }
+}

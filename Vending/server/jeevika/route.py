@@ -72,7 +72,7 @@ def get_data(machine_id):
             "medicine_name" : stock.medicines.medicine_name,
             "stock" : stock.stock_count,
             "price" : stock.medicines.price,
-            "image" : stock.medicines.image
+            # "image" : stock.medicines.image
         }
         data_set.append(data)
     return data_set
@@ -84,7 +84,7 @@ def stock(medicine_id):
     data_set = []
     for stock in stocks:
         data = {
-            "medicine_id" : stock.medicines.id,
+            "medicine_id" : stock.medicines.medicine_id,
             "medicine_name" : stock.medicines.medicine_name,
             "stock" : stock.stock_count,
             "price" : stock.medicines.price
@@ -175,6 +175,10 @@ def fetch_order():
     print(orderDetail)
     return orderDetail,200
 
+
+# development routes
+
+
 @app.route('/database', methods = ["GET"])
 @cross_origin()
 def database():
@@ -194,11 +198,21 @@ def database():
     return "done",200
     # med = Medicine.query.filter_by(medicine_id = meds['medicine_id']).first()
 
-@app.route('/update_machine_data',methods = ['GET'])
+@app.route('/update_machine_data',methods = ['POST'])
 def add_data2():
-        for i in range(1,9):
+        for i in range(1,5,1):
             med = Medicine.query.filter_by(medicine_id = i).first()
             stock1 = Stock(machine_id = 1,medicines = med, stock_count= 100,address = i )
             db.session.add(stock1)
             db.session.commit()
         return "success", 200
+
+@app.route('/add_medicine',methods = ['POST'])
+def add_data3():
+        datas = request.get_json()
+        for data in datas:
+             
+            med = Medicine(medicine_name = data['medicine_name'], price = data['price'], tablets = data['tablets'], non_tablet = data['non_tablet'], quantity = data['quantity'] )
+            db.session.add(med)
+            db.session.commit()
+        return "success",200

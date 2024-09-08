@@ -13,8 +13,7 @@ body {
 
 .container {
   width: 210mm; /* Use max-width instead of width */
-  min-height: 283mm;
-  max-height: fit-content;
+  height: fit-content;
   margin:  20px auto;
   padding: 20px;
   border: 1px solid #000;

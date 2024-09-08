@@ -9,8 +9,7 @@ def load_user(user_id):
     return Agent.query.get(int(user_id))
 
 class Medicine(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    medicine_id = db.Column(db.Integer, unique=True, nullable=False)
+    medicine_id = db.Column(db.Integer, primary_key=True)
     medicine_name = db.Column(db.String(120), unique=True, nullable=False)
     price = db.Column(db.Integer,nullable = False)
     tablets = db.Column(db.Integer,nullable = True)
@@ -22,21 +21,29 @@ class Stock(db.Model):
     machine_id = db.Column(db.Integer, unique = False, nullable = False)
     stock_count = db.Column(db.Integer, unique=False, nullable=False)
     address = db.Column(db.Integer, nullable=False)
-    expire = db.Column(db.DateTime, nullable=False)
+    expire = db.Column(db.DateTime, nullable=True)
     __table_args__ = (db.UniqueConstraint('machine_id','address'),)
-    medicine = db.Column(db.Integer, db.ForeignKey('medicine.id'), nullable =  False)
-
+    medicine = db.Column(db.Integer, db.ForeignKey('medicine.medicine_id'), nullable =  False)
     def __repr__(self):
         return f"Stock('{self.medicine.medicine_id}', '{self.stock_count}', '{self.address}')"
 
 
+
 class Patient(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, unique=True, nullable=False)
+    patient_id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     sex = db.Column(db.Boolean, nullable=False)
     dob = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    mobile = db.Column(db.String(10), nullable= False)
+    mobile = db.Column(db.String(10), nullable= False, unique=True)
+
+    def to_dict(self):
+        return {
+            'patient_id': self.patient_id,
+            'name': self.name,
+            'sex': self.sex,
+            'dob': self.dob,
+            'mobile': self.mobile
+        }
 class Agent(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)

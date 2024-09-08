@@ -6,13 +6,16 @@ import dayjs from "dayjs";
 import jsPDF from "jspdf";
 import PSPDFKit from "pspdfkit";
 import html2canvas from "html2canvas";
-import ReactDOM from "react-dom";
+import ReactDOMServer from 'react-dom/server';
+import axios from "axios";
+import { TextareaAutosize } from "@mui/material";
 import { TextField, Autocomplete } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { PrescriptionTemplate } from "./PrescriptionTemplate";
 const PrescriptionForm = ({ patientInfo, medicineList }) => {
   const [nextDate, setNextDate] = useState(null);
   var medList = [];
@@ -25,7 +28,7 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
       medicineName: "",
       dosage: "",
       duration: 0,
-      period: 0,
+      period: '',
     },
   ]); // Initialize an empty array of rows
   const navigate = useNavigate();
@@ -54,13 +57,13 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
     followUp: "",
   });
   useEffect(() => {
-    if (data.doctorName !== "") {
+    if(data.doctorName !== ""){
       const url = "/pdf";
-      navigate(url,{
-        state: data
+      navigate(url, {
+        state: data,
       });
     }
-  }, [data]);
+}, [data]);
   const calculateAge = (dob) => {
     const today = new Date();
     const birthDate = new Date(dob);
@@ -74,7 +77,9 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const hasEmptyMedicineName = rows.some((row) => row.medicineName === "");
-    if (complaint == "" || patientDiagnosis == "" || hasEmptyMedicineName) {
+    const hasEmptyPeriod = rows.some((row) => row.period === "");
+    const hasEmptyDuration = rows.some((row) => row.duration === 0);
+    if (complaint == "" || patientDiagnosis == "" || hasEmptyMedicineName || hasEmptyDuration || hasEmptyPeriod) {
       alert("Please fill all the fields");
     } else {
       // Collect data from the form
@@ -94,7 +99,8 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
       const clinicalFindings = findings;
       const diagnosis = patientDiagnosis;
       const advice = patientAdvice;
-      const followUp = (nextDate !== null)?(dayjs(nextDate).format("DD/MM/YYYY")):("No Need") ;
+      const followUp =
+        nextDate !== null ? dayjs(nextDate).format("DD/MM/YYYY") : "No Need";
       const medicines = [];
       rows.forEach((element) => {
         const medicine = {
@@ -130,16 +136,15 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
       
     }
   };
-
   const handleAddRow = () => {
     setRows([
       ...rows,
       {
         medicineName: "",
         dosage: "",
-        dosageTime : 0,
+        dosageTime: 0,
         duration: 0,
-        period: 0,
+        period: "",
       },
     ]); // Add a new empty row to the array
   };
@@ -171,54 +176,115 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
       <div className="form-info">
         <div className="pres-row">
           <li className="heading-list">
-            Patient's Complaint :
-            <TextField
-              sx={{
-                position: "relative",
-                left: "1%",
-                width: "90%",
-                marginTop: "1rem",
-                backgroundColor: "white",
-              }}
+          <span>•&ensp;Patient's Complaint :</span>
+            <TextareaAutosize
+              className="textArea"
               multiline={true}
-              minRows={2}
+              minRows={4}
               placeholder="Patients Complaint"
-              onChange={(event) => setComplaint(event.target.value)}
-            ></TextField>
+              value={complaint}
+              onFocus={() => {
+                if (complaint === "") {
+                  setComplaint("• ");
+                }
+              }}
+              onBlur={() => {
+                if (complaint === "• ") {
+                  setComplaint("");
+                }
+              }}
+              onChange={(event) => {
+                setComplaint(event.target.value);
+              }}
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  let line = complaint;
+                  let cursor = event.target.selectionStart;
+                  if (!line.startsWith("•")) {
+                    line = "• " + line;
+                    cursor += 2;
+                  }
+                  setComplaint(
+                    line.slice(0, cursor) + "• " + line.slice(cursor)
+                  );
+                }
+              }}
+            ></TextareaAutosize>
           </li>
           <li className="heading-list">
-            Clinical Findings :
-            <TextField
-              sx={{
-                position: "relative",
-                left: "1%",
-                width: "90%",
-                marginTop: "1rem",
-                backgroundColor: "white",
-              }}
+          <span>•&ensp;Clinical Findings :</span>
+            <TextareaAutosize
+              className="textArea"
               multiline={true}
-              minRows={2}
-              placeholder="Clinical Findings"
-              onChange={(event) => setFindings(event.target.value)}
-            ></TextField>
+              minRows={4}
+              placeholder="Complaint Findings"
+              value={findings}
+              onFocus={() => {
+                if (findings === "") {
+                  setFindings("• ");
+                }
+              }}
+              onBlur={() => {
+                if (findings === "• ") {
+                  setFindings("");
+                }
+              }}
+              onChange={(event) => {
+                setFindings(event.target.value);
+              }}
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  let line = findings;
+                  let cursor = event.target.selectionStart;
+                  if (!line.startsWith("•")) {
+                    line = "• " + line;
+                    cursor += 2;
+                  }
+                  setFindings(
+                    line.slice(0, cursor) + "• " + line.slice(cursor)
+                  );
+                }
+              }}
+            ></TextareaAutosize>
           </li>
         </div>
         <div className="pres-row">
           <li className="heading-list">
-            Diagnosis :
-            <TextField
-              sx={{
-                position: "relative",
-                left: "0.5%",
-                width: "45%",
-                marginTop: "1rem",
-                backgroundColor: "white",
-              }}
+          <span>•&ensp;Diagnosis :</span>
+            <TextareaAutosize
+              className="textArea"
+              style={{ width: "44.5%" }}
               multiline={true}
-              minRows={2}
+              minRows={4}
               placeholder="Diagnosis"
-              onChange={(event) => setDiagnosis(event.target.value)}
-            ></TextField>
+              value={patientDiagnosis}
+              onFocus={() => {
+                if (patientDiagnosis === "") {
+                  setDiagnosis("• ");
+                }
+              }}
+              onBlur={() => {
+                if (patientDiagnosis === "• ") {
+                  setDiagnosis("");
+                }
+              }}
+              onChange={(event) => {
+                setDiagnosis(event.target.value);
+              }}
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  let line = patientDiagnosis;
+                  let cursor = event.target.selectionStart;
+                  if (!line.startsWith("•")) {
+                    line = "• " + line;
+                    cursor += 2;
+                  }
+                  setDiagnosis(
+                    line.slice(0, cursor) + "• " + line.slice(cursor)
+                  );
+                }
+              }}
+            ></TextareaAutosize>
           </li>
         </div>
         <div className="pres-row table-med">
@@ -243,7 +309,7 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                     options={medList}
                     sx={{
                       width: "80%",
-                      backgroundColor: "white",
+                      backgroundColor: "#00829b",
                       margin: "auto",
 
                       borderRadius: "0.25rem",
@@ -275,19 +341,44 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                       sx={{
                         width: "70%",
                         margin: "auto",
-                        backgroundColor: "white",
+                        backgroundColor: "#00829b",
                         borderRadius: "0.25rem 0rem 0rem 0.25rem",
                       }}
                       multiline={true}
                       minRows={1}
                       placeholder="Dosage..."
                       value={row.dosage}
-                      onChange={(event) =>
-                        handleInputChange(index, "dosage", event.target.value)
-                      }
+                      onFocus={() => {
+                        if (row.dosage === "") {
+                          handleInputChange(index,"dosage","• ");
+                        }
+                      }}
+                      onBlur={() => {
+                        if (row.dosage === "• ") {
+                          handleInputChange(index,"dosage","");
+                        }
+                      }}
+                      onChange={(event) => {
+                        handleInputChange(index,"dosage",event.target.value);
+                      }}
+                      onKeyUp={(event) => {
+                        if (event.key === "Enter") {
+                          let line = row.dosage;
+                          let cursor = event.target.selectionStart;
+                          if (!line.startsWith("•")) {
+                            line = "• " + line;
+                            cursor += 2;
+                          }
+                          handleInputChange(index,"dosage",
+                            line.slice(0, cursor) + "• " + line.slice(cursor)
+                          );
+                        }
+                      }}
+                      
                     ></TextField>
                     <TextField
                       type="number"
+                      label="Total"
                       InputProps={{
                         inputProps: {
                           max: 100,
@@ -297,12 +388,16 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                       sx={{
                         width: "30%",
                         margin: "auto",
-                        backgroundColor: "white",
+                        backgroundColor: "#00829b",
                         borderRadius: "0rem 0.25rem 0.25rem 0rem",
                       }}
                       value={row.dosageTime}
                       onChange={(event) =>
-                        handleInputChange(index, "dosageTime", event.target.value)
+                        handleInputChange(
+                          index,
+                          "dosageTime",
+                          event.target.value
+                        )
                       }
                     ></TextField>
                   </div>
@@ -319,7 +414,7 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                       }}
                       sx={{
                         width: "5rem",
-                        backgroundColor: "white",
+                        backgroundColor: "#00829b",
                         display: "inline-block",
                         borderRadius: "0.25rem 0rem 0rem 0.25rem",
                       }}
@@ -332,7 +427,7 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                     <Select
                       sx={{
                         width: "6rem",
-                        backgroundColor: "white",
+                        backgroundColor: "#00829b",
                         borderRadius: "0rem 0.25rem 0.25rem 0rem",
                       }}
                       defaultValue="D"
@@ -341,8 +436,9 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
                         handleInputChange(index, "period", event.target.value)
                       }
                     >
-                      <MenuItem value={0}>Days</MenuItem>
-                      <MenuItem value={1}>Month</MenuItem>
+                      <MenuItem value={'day'}>Day</MenuItem>
+                      <MenuItem value={'week'}>Week</MenuItem>
+                      <MenuItem value={'month'}>Month</MenuItem>
                     </Select>
                   </div>
                 </td>
@@ -350,40 +446,56 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
             ))}
           </table>
           <button className="add-row" onClick={handleAddRow}>
-            <img src="/printing.png" alt="" />
+            <img src="/add-prescription.png" alt="" />
             <h3>Add Medicine</h3>
           </button>
         </div>
         <div className="pres-row">
           <li className="heading-list">
-            Advice :
-            <TextField
-              sx={{
-                position: "relative",
-                left: "0.5%",
-                width: "45%",
-                marginTop: "1rem",
-                backgroundColor: "white",
-              }}
+          <span>•&ensp;Advice :
+          </span>
+            <TextareaAutosize
+              className="textArea"
+              style={{ width: "44.5%" }}
               multiline={true}
-              minRows={2}
+              minRows={4}
               placeholder="Advice to follow"
               value={patientAdvice}
+              onFocus={() => {
+                if (patientAdvice === "") {
+                  setAdvice("• ");
+                }
+              }}
+              onBlur={() => {
+                if (patientAdvice === "• ") {
+                  setAdvice("");
+                }
+              }}
               onChange={(event) => {
                 setAdvice(event.target.value);
               }}
-            ></TextField>
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  var line = patientAdvice;
+                  if (!patientAdvice.startsWith("•")) line = "• " + line;
+                  const cursor = event.target.selectionStart;
+                  setAdvice(line.slice(0, cursor) + "• " + line.slice(cursor));
+                }
+              }}
+            ></TextareaAutosize>
           </li>
         </div>
         <div className="pres-row">
           <li className="heading-list">
-            Follow Up :
+          <span>•&ensp;Follow Up :</span>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 sx={{
                   width: "11rem",
                   marginTop: "1rem",
-                  backgroundColor: "white",
+                  backgroundColor: "#00829b",
+                  borderRadius: '0.5rem',
+                  marginLeft:'1%'
                 }}
                 value={nextDate}
                 onChange={(newValue) => {
@@ -398,17 +510,17 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
             style={{
               height: 2,
               width: "100%",
-              backgroundColor: "#ccc",
               marginRight: 10,
               marginLeft: 10,
               marginBottom: 10,
               marginTop: 10,
             }}
           />
-          <button className="generate add-row" onClick={handleSubmit}>
+          <button className="generate" onClick={handleSubmit}>
             <img src="/generate-prescription.png" alt="" />
             <h2>Generate Prescription</h2>
           </button>
+          
         </div>
       </div>
     </div>

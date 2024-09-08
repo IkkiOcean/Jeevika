@@ -10,10 +10,9 @@ import {
 import { createRoot } from "react-dom/client";
 import {Inventory} from './pages/Inventory';
 import { checkInventory } from './pages/Inventory';
-
 import DoctorPage from './pages/doctor';
 import {Prescription, loadPriscription }from './pages/prescription';
-import PrescriptionTemplate from './component/PrescriptionTemplate';
+import {PrescriptionTemplate} from './component/PrescriptionTemplate';
 const router = createBrowserRouter([
   {
     path: "/inventory",
@@ -39,7 +38,7 @@ const router = createBrowserRouter([
     path: "/pdf",
     element: (
       <PrescriptionTemplate/>
-    )
+    ),
   },
 ]);
 

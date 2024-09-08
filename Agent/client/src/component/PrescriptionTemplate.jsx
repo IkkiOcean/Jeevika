@@ -1,14 +1,83 @@
 // PrescriptionTemplate.js
-import React from 'react';
-import QRCode from "react-qr-code";
+import React, { useEffect, useState } from 'react';
+// import QRCode from "react-qr-code";
+import { QRCodeCanvas } from 'qrcode.react';
 import './prescriptionTemplate.css'
 import { useLocation } from "react-router-dom";
+import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
+import axios from 'axios';
 const PrescriptionTemplate = () => {
+  // const generatePdf = async() => {
+  //   const pdfContent = document.getElementById('prescriptionTemplate');
+    
+  //   const file = await html2canvas(pdfContent, {
+  //     useCORS: true,
+  //     scale: 2, // adjust the scale to improve image quality
+  //   }).then(canvas => {
+  //     const doc = new jsPDF('p', 'pt', 'a4');
+  //     const pdfWidth = doc.internal.pageSize.getWidth();
+  //     const pdfHeight = doc.internal.pageSize.getHeight();
+  //     const canvasWidth = canvas.width;
+  //     const canvasHeight = canvas.height;
+  //     const scaleFactor = Math.min(pdfWidth / canvasWidth, pdfHeight / canvasHeight);
+  //     doc.addImage(canvas, 'JPEG', 0, 0, canvasWidth * scaleFactor, canvasHeight * scaleFactor);
+  //     const pdfBlob = doc.output('blob');
+      
+  //     // saveAs(pdfBlob, `prescription-${data.patientId}-${data.date}.pdf`);
+      
+  //     return pdfBlob
+  //   });
+  //   return file
+  // };
+    const generatePdf=async()=>{
+      const input = document.getElementById('prescriptionTemplate');
+     const pdfImage= await html2canvas(input)
+  .then((canvas) => {
+    const imgData = canvas.toDataURL('image/png');
+    console.log(imgData)
+    return imgData.split(';base64,')[1];
+  })
+  console.log(pdfImage)
+  return pdfImage
+;
+    }
   const location = useLocation();
   const data = location.state;
   const qrValue = [];
-  data.medicines.forEach((med)=>{
-    const quant = med.dosageTime * med.duration * (med.period == 0)?1:30
+  // prescription-${data.patientId}-${data.date}.pdf
+  useEffect(() => {
+    const generatePdfAndUpload = async () => {
+      const pdfImage = await generatePdf();
+      console.log(pdfImage)
+      const dat = {
+        "img" : pdfImage,
+        "patientId": data.patientId,
+        "date": data.date
+      };
+      try {
+        const response = await axios.post(`http://127.0.0.1:5000/upload_pdf`, dat
+        );
+        console.log(response.status);
+      } catch (error) {
+        console.error(error);
+        alert("Network error. Please try again later.");
+      }
+    };
+    generatePdfAndUpload();
+}, [data]);
+    data.medicines.forEach((med)=>{
+    let period;
+    if(med.period === 'day')
+      period = 1;
+    else if(med.period === 'week')
+      period = 7;
+    else
+      period = 30;
+    
+
+    const quant = med.dosageTime * med.duration * period
     const qrData ={
       medicine_id : med.name.id,
       quantity : quant,
@@ -16,14 +85,16 @@ const PrescriptionTemplate = () => {
     qrValue.push(qrData);
   })
   const qrEncode = btoa(JSON.stringify(qrValue))
+
+
   return (
     
-    <div className="container">
+    <div className="container" id='prescriptionTemplate'>
       <div className="header">
         <div className="left">
           <p><strong>{data.doctorName}</strong></p>
           <p>{data.doctorQualification}</p>
-          <p>Reg. No: {data.regNo}</p>
+          <h1>Reg. No: {data.regNo}</h1>
         </div>
         <div className="right">
           <h1>{data.hospitalName}</h1>
@@ -43,17 +114,17 @@ const PrescriptionTemplate = () => {
             <th>Clinical Findings</th>
           </tr>
           <tr>
-            <td>{data.chiefComplaints}</td>
-            <td>{data.clinicalFindings}</td>
+            <td><pre>{data.chiefComplaints}</pre></td>
+            <td><pre>{data.clinicalFindings}</pre></td>
           </tr>
         </table>
       </div>
       <div className="section">
         <p><strong>Diagnosis:</strong></p>
-        <p>{data.diagnosis}</p>
+        <p><pre>{data.diagnosis}</pre></p>
       </div>
       <div className="section">
-        <p><strong>R</strong></p>
+        <p><strong>℞</strong></p>
         <table>
           <tr>
             <th>Medicine Name</th>
@@ -62,31 +133,32 @@ const PrescriptionTemplate = () => {
           </tr>
           {data.medicines.map((medicine, index) => (
             <tr key={index}>
-              <td>{medicine.name.label}</td>
-              <td>{medicine.dosage}</td>
-              <td>{medicine.duration} {medicine.period?' days':' month'}</td>
+              <td><pre>{medicine.name.label}</pre></td>
+              <td><pre>{medicine.dosage}</pre></td>
+              <td>{medicine.duration} {medicine.period}</td>
             </tr>
           ))}
         </table>
       </div>
       <div className="advice">
         <p><strong>Advice:</strong></p>
-        <p>{data.advice}</p>
+        <p><pre>{data.advice}</pre></p>
       </div>
       <div className="section">
         <p><strong>Follow Up:</strong> {data.followUp}</p>
       </div>
       <div className="footer">
         <p><strong>Scan QR Code:</strong> </p>
-        <QRCode 
+        <QRCodeCanvas
         className='qrcode'
     value={qrEncode}
   />
       </div>
+      
     </div>
     
     
   );
 };
 
-export default PrescriptionTemplate;
+export  {PrescriptionTemplate};

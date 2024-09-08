@@ -5,8 +5,10 @@ from flask_cors import cross_origin
 from jeevika_agent.models import Agent, Medicine, Patient
 from jeevika_agent.form import InventoryForm, LoginForm, UpdateAccountForm, RequestResetForm,ResetPasswordForm
 from flask_mail import Message
-
-
+import requests
+import img2pdf
+from PIL import Image
+import os
 
 
 @app.route('/fetch_data/<int:machine_id>', methods = ['GET'])
@@ -40,7 +42,7 @@ def fetch_patname():
         patient_list = []
         for patient in patients:
                 patient_dict = {
-                'id': patient.id,
+                'id': patient.patient_id,
                 'name': patient.name,
                 'sex': patient.sex,
                 'dob': patient.dob,
@@ -49,7 +51,58 @@ def fetch_patname():
                 patient_list.append(patient_dict)
         return jsonify(patient_list)
 
+@app.route('/add_patient',methods = ['POST'])
+@cross_origin()
+def add_patient():
+        data = request.get_json()
+        print(data)
+        try:
+                pat = Patient(name = data['name'], sex = data['sex'], dob = data['dob'], mobile = data['mobile'])
+                db.session.add(pat)
+                db.session.commit()
+                return jsonify({'message': 'Patient added successfully', 'id': pat.to_dict()}), 200  
+        except Exception as e:
+                db.session.rollback()
+                return jsonify({'message': 'Error adding patient', 'error': str(e)}), 400
+        
 
+
+
+import base64
+import io
+@app.route('/upload_pdf', methods=['POST'])
+@cross_origin()
+def upload_pdf():
+    data = request.get_json()
+    try:
+        img_data = data['img']
+        while len(img_data) % 4 != 0:
+            img_data += '='
+        img = base64.b64decode(img_data)
+        
+        image = Image.open(io.BytesIO(img))
+        path = f'prescription_{data["patientId"]}_{data["date"]}.pdf'
+        path = path.replace("/",".")
+        image.save(path)
+        file = open(path,'rb')  # Open in binary mode
+        headers = {
+            'x-amz-acl': 'public-read',
+            'Content-Type': 'application/pdf'
+        }
+        bucket_name = 'jeevika'
+        url = f'https://aso3oaabz6.execute-api.eu-north-1.amazonaws.com/put/{bucket_name}/{path}'
+
+        response = requests.put(url, data=file,headers=headers)
+
+        if response.status_code == 200:
+            return 'PDF uploaded successfully!',200
+        else:
+            return 'Error uploading PDF', 500
+    except Exception as e:
+        print(e)
+        return 'Error uploading PDF', 500
+
+    
 # @app.route('/update_machine',methods = ['POST','GET'])
 
 # def add_data():
@@ -171,19 +224,11 @@ def fetch_patname():
 @app.route('/add_medicine',methods = ['POST'])
 def add_data2():
         data = request.get_json()
-        med = Medicine(medicine_id = data['medicine_id'],medicine_name = data['medicine_name'], price = data['price'], tablets = data['tablet'], non_tablet = data['non_tablet'], quantity = data['quantity'] )
+        med = Medicine(medicine_name = data['medicine_name'], price = data['price'], tablets = data['tablet'], non_tablet = data['non_tablet'], quantity = data['quantity'] )
         db.session.add(med)
         db.session.commit()
         return "success",200
 
-@app.route('/add_patient',methods = ['POST'])
-def add_data4():
-        data = request.get_json()
-        pat = Patient(patient_id = data['id'],name = data['name'], sex = data['sex'], dob = data['dob'], mobile = data['mobile'])
-        db.session.add(pat)
-        db.session.commit()
-        return "success",200
-   
 
 # @app.route('/update_machine_data',methods = ['POST'])
 # def add_data2():

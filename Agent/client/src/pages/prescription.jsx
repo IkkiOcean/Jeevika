@@ -8,9 +8,10 @@ import { useLoaderData } from "react-router-dom";
 const Prescription = () => {
   const data = useLoaderData();
   const [patient, setPatient] =useState(1);
-  
+  const [toggleAddPatient, setAddPatient] = useState(false)
   const medicineList = data.medData;
-  const patientList = data.patData;
+  const [patientList, setPatientList] = useState(data.patData);
+  console.log(patientList)
   const [searchText, setSearchText] = useState("");
   const [toggleNew, setToggleNew] = useState(false);
   const calculateAge = (dob) => {
@@ -32,18 +33,21 @@ const Prescription = () => {
     //   handleSearch(value)
     // }
   };
-  const handleNew = () => {
-    
+  const handleAddPatient = () => {
+    setAddPatient(true)
   };
   return (
     <div className="container-body">
       <div className="patient-list-1">
         <div className="patient-inner">
-          <div className="add-patient">
+          {!toggleAddPatient?(
+            <button className="add-patient" onClick={handleAddPatient}>
             <h1>New Patient</h1>
             <img src="/add-patient.png" alt="" />
-          </div>
+          </button>
 
+          ):
+          <></>}
           <div className="patient-list-header">
             <h1>Patients</h1>
             <input
@@ -61,6 +65,7 @@ const Prescription = () => {
           <div className="patient-list-bottom">
           {patientList.map((patient, index) => (
             <div key= {index} className="patient-card" onClick={()=>{
+              setAddPatient(false)
               setPatient(patient.id)
             }}>
               <div className="patient-profile">
@@ -77,6 +82,13 @@ const Prescription = () => {
         </div>
       </div>
       <div className="prescription-area">
+      {toggleAddPatient?(
+          <PatientForm setToggleNew={setToggleNew}
+          setAddPatient={setAddPatient} setPatient={setPatient} patientList={patientList} setPatientList={setPatientList}/>)
+          :
+        (  
+        <div className="toggle-div">
+
         <div className="centre-div pres-top">
           <div className="prescription-top">
             <img src="\patient-icon.png" alt="" />
@@ -86,7 +98,6 @@ const Prescription = () => {
               className="add-new"
               onClick={() => {
                 setToggleNew(!toggleNew);
-                handleNew();
               }}
             >
               <img src="/add-prescription.png" alt="" />
@@ -134,6 +145,8 @@ const Prescription = () => {
               )}
             </div>
           </div>
+        </div>
+        )}
         
       </div>
     </div>
@@ -141,7 +154,7 @@ const Prescription = () => {
 };
 export {Prescription};
 
-export const  loadPriscription = async()=> {
+export const loadPriscription = async()=> {
   var medData;
   var patData;
   await axios.get(`http://127.0.0.1:5000/fetch_medicine_name`).then((res) => {
