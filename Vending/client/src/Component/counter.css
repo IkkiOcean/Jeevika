@@ -2,7 +2,7 @@
 /* .body{
     background-color: #e8e8e8;
 }
-#jeevika{
+/*#jeevika{
     background-color: #b6b5b5;
 } */
 .backArrow{
@@ -63,7 +63,7 @@
     background-color:#9CAFAA;
 }
 .bottom-bar{
-    
+    min-height: fit-content;
     position: fixed;
     display: flex;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -85,6 +85,7 @@
 } */
 .bottom-bar-area-left{
     display: inline-block;
+    min-height: fit-content;
     margin: 5px;
     width: 65%;
     height: 95%;
@@ -96,6 +97,7 @@
 }
 .bottom-bar-area-right{
     display: inline-block;
+    min-height: fit-content;
     justify-self: end;
     margin: 5px;
     height: 95%;
@@ -162,9 +164,7 @@
     width: 30px;
     height: 30px;
 }
-#pay{
-    margin-top: 60px;
-}
+
 #modalButton{
     display: flex;
     width: fit-content;
