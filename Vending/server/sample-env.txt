@@ -1,0 +1,8 @@
+SECRET_KEY = '5791628bb0b13ce0c676dfde280ba245'
+SQLALCHEMY_DATABASE_URI = 'postgresql://jeevika_db_user:jrav3wVQUqj9rDhyY4fYfPZoYUbm9u4k@dpg-d0368nqdbo4c73edvhn0-a.oregon-postgres.render.com/jeevika_db'
+MAIL_SERVER= ''
+MAIL_PORT= 587
+MAIL_USE_TLS= True
+MAIL_USERNAME= ''
+MAIL_PASSWORD= ''
+GEMINI_API = 'AIzaSyBHDzHtV4d_h83nrT750yIh_BdFPRVS94c'
