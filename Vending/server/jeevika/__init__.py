@@ -1,17 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hzzsxita:Zaeclydnal37FcYKmLLDJHkH3KOUjq8W@tiny.db.elephantsql.com/hzzsxita'
-MAIL_SERVER= "smtp.googlemail.com"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+MAIL_SERVER= os.environ.get('MAIL_SERVER')
 MAIL_PORT= 587
 MAIL_USE_TLS= True
-MAIL_USERNAME= 'ikki.debug@gmail.com'
-MAIL_PASSWORD= 'hqti jpcg ugoe lvxi'
+MAIL_USERNAME= os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD= os.environ.get('MAIL_PASSWORD')
 mail = Mail()
 db = SQLAlchemy(app)
 from jeevika import route

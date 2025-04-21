@@ -59,8 +59,7 @@ function Home() {
           </button>
           <button style={{backgroundColor: '#e8d066', opacity: '0.7'}}disabled>
             Get Medicine Recommendation
-            <br />
-            <span className="construction">Under Construction</span>
+            
           </button>
         </div>
       </div>

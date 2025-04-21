@@ -193,31 +193,64 @@ const Counter = ()=>{
     </div>
     ):(
       <>
-      <div style={{position:'relative',backgroundColor:"#b6b5b5",boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px', zIndex:'10'}}>
+      <div style={{position:'relative',backgroundColor:"#ffffff",boxShadow: 'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px', zIndex:'10'}}>
         
-      <h1 id='jeevika' className="text-3xl font-bold p-2 text-center ">
-      <img onClick={()=>navigator('/')} src="./backArrow.png" alt="" className="backArrow" />
-        Jeevika
-      </h1>
-      <div style={{ display: "flex" ,paddingBottom:'5px'}}>
-        <div style={{ flex: 1 }}>
-          <img src="./searchIcon.png" alt="" className="search-icon" />
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search"
-            style={{ width: "30%",height: '30px',borderRadius:'20px',float:'right',marginRight: '-27px',display:'inline-block',marginBottom:'5px',padding:'6px',zIndex: '4' }}
-            value={searchText}
-            onChange={(event) => {
-              
-              handleSearchText(event.target.value);
-              console.log(event.target.value)
-              
-            }}
-          />
-        </div>
-        
-      </div>
+      <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '10px' }}>
+  
+  {/* Left */}
+  <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+    <img 
+      onClick={() => navigator('/')} 
+      src="./backArrow.png" 
+      alt="Back" 
+      className="backArrow"
+      style={{ height: '24px', width:'24px', cursor: 'pointer' }}
+    />
+  </div>
+
+  {/* Center */}
+  <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+    <h1 id='jeevika' className="text-3xl font-bold m-0">Jeevika</h1>
+  </div>
+
+  {/* Right */}
+  <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+    <div style={{ position: 'relative', width: '160px' }}>
+      <input
+        type="text"
+        className="form-control"
+        placeholder="Search"
+        style={{
+          height: '30px',
+          borderRadius: '20px',
+          padding: '6px 35px 6px 12px',
+          backgroundColor: "#ffffff",
+          color: "#000",
+          border: '2px solid black',
+          width: '100%',
+        }}
+        value={searchText}
+        onChange={(event) => {
+          handleSearchText(event.target.value);
+        }}
+      />
+      <img
+        src="./searchIcon.png"
+        alt="Search"
+        style={{
+          position: 'absolute',
+          right: '8px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          height: '16px',
+          width: '16px',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  </div>
+
+</div>
       </div>
       <div
       style={{

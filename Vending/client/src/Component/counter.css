@@ -14,13 +14,8 @@
     cursor: pointer;
 }
 .search-icon{
-    position: relative;
-    width: 20px;
-    height: 20px;
-    margin-top: 4px;
-    float: right;
-    margin-right: 9.5%;
-    z-index: 8;
+    
+    margin-right: 5%;
     opacity: 0.4;
 }
 .card{
@@ -42,7 +37,7 @@
 }
 .cardList{
     padding-top: 5px;
-    margin-left: 90px;
+    margin: auto;
     margin-bottom: 15%;
     background-color: #e8e8e8;
 }

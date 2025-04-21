@@ -1,3 +1,5 @@
+# UNCOMMENT BELOW LINES TO RUN ON RASPBERRY PI
+
 # import RPi.GPIO as GPIO
 import time
 
