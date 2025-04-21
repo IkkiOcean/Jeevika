@@ -92,11 +92,11 @@ const PrescriptionTemplate = () => {
     <div className="container" id='prescriptionTemplate'>
       <div className="header">
         <div className="left">
-          <p><strong>{data.doctorName}</strong></p>
+          <p><strong>Dr. {data.doctorName}</strong></p>
           <p>{data.doctorQualification}</p>
-          <h1>Reg. No: {data.regNo}</h1>
+          <h4>Reg. No: {data.regNo}</h4>
         </div>
-        <div className="right">
+        <div className="right" style={{marginRight: '5px'}}>
           <h1>{data.hospitalName}</h1>
           <p>{data.hospitalAddress}</p>
           <p>Ph: {data.hospitalPhone}, Timing: {data.hospitalTiming} | Closed: Sunday</p>

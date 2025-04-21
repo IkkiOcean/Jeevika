@@ -83,8 +83,8 @@ const PrescriptionForm = ({ patientInfo, medicineList }) => {
       alert("Please fill all the fields");
     } else {
       // Collect data from the form
-      const doctorName = "Tanishq bagchi";
-      const doctorQualification = "MBBS";
+      const doctorName = "PK Mishra";
+      const doctorQualification = "MBBS/MD";
       const regNo = "123";
       const hospitalName = "Saint parmanand hospital";
       const hospitalAddress = "civil lines, new delhi";

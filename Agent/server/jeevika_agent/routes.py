@@ -9,7 +9,8 @@ import requests
 import img2pdf
 from PIL import Image
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 @app.route('/fetch_data/<int:machine_id>', methods = ['GET'])
 @cross_origin()
 def fetch_data(machine_id):
@@ -63,10 +64,32 @@ def add_patient():
         except Exception as e:
                 db.session.rollback()
                 return jsonify({'message': 'Error adding patient', 'error': str(e)}), 400
-        
+@app.route('/delete_patient', methods=['DELETE'])
+@cross_origin()
+def delete_patient():
+    data = request.get_json()
+    try:
+        name = data['name']
+        patient = Patient.query.filter_by(name=name).first()
 
+        if patient:
+            db.session.delete(patient)
+            db.session.commit()
+            return jsonify({'message': f'Patient "{name}" deleted successfully'}), 200
+        else:
+            return jsonify({'message': f'No patient found with name "{name}"'}), 404
 
-
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'Error deleting patient', 'error': str(e)}), 400
+@app.route('/drop_patient_table', methods=['DELETE'])
+@cross_origin()
+def drop_patient_table():
+    try:
+        Patient.__table__.drop(db.engine)  # Drops the entire table
+        return jsonify({'message': 'Patient table dropped successfully.'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Error dropping patient table', 'error': str(e)}), 400
 import base64
 import io
 @app.route('/upload_pdf', methods=['POST'])
@@ -89,7 +112,8 @@ def upload_pdf():
             'Content-Type': 'application/pdf'
         }
         bucket_name = 'jeevika'
-        url = f'https://aso3oaabz6.execute-api.eu-north-1.amazonaws.com/put/{bucket_name}/{path}'
+        amz_url = os.environ.get("AMAZON_URL")
+        url = f'{amz_url}/put/{bucket_name}/{path}'
         try:
               
                 response = requests.put(url, data=file,headers=headers)

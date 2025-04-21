@@ -11,9 +11,22 @@ const Prescription = () => {
   const [toggleAddPatient, setAddPatient] = useState(false)
   const medicineList = data.medData;
   const [patientList, setPatientList] = useState(data.patData);
-  console.log(patientList)
   const [searchText, setSearchText] = useState("");
   const [toggleNew, setToggleNew] = useState(false);
+  if(data.medData.length == 0){
+    return (
+      <div className="container">
+        ADD MEDICINE DATA USING APIS, NO INTERFACE AVAILABLE RIGHT NOW
+      </div>
+    )
+  }
+  if(data.patData.length == 0){
+    return (
+      <div className="container">
+        ADD PATIENT DATA USING APIS, NO INTERFACE AVAILABLE RIGHT NOW
+      </div>
+    )
+  }
   const calculateAge = (dob) => {
     const today = new Date();
     const birthDate = new Date(dob);

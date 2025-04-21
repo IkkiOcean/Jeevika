@@ -32,6 +32,13 @@ const Counter = ()=>{
   const [meds,setMeds] = useState(data);
   const [resultStatus,setResultStatus] = useState("");
   const [loadingText, setLoadingText] = useState('');
+  if(meds.length == 0){
+    return (
+      <div className="container">
+        ADD PATIENT DATA USING APIS, NO INTERFACE AVAILABLE RIGHT NOW
+      </div>
+    )
+  }
   const handleSearchText = (value) => {
     setSearchText(value);
     if(value == ""){
