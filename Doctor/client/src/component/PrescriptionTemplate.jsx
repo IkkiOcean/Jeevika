@@ -8,6 +8,7 @@ import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
+import { API_BASE_URL } from "../config";
 const PrescriptionTemplate = () => {
   // const generatePdf = async() => {
   //   const pdfContent = document.getElementById('prescriptionTemplate');
@@ -57,7 +58,7 @@ const PrescriptionTemplate = () => {
         "mobile" : data.patientMobile
       };
       try {
-        const response = await axios.post(`http://127.0.0.1:5000/upload_pdf`, dat
+        const response = await axios.post(`${API_BASE_URL}/upload_pdf`, dat
         );
         console.log(response.status);
       } catch (error) {

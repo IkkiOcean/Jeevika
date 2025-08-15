@@ -1,6 +1,7 @@
 import "../pages/prescription.css";
 import "./patientForm.css";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 import { TextareaAutosize } from "@mui/material";
 import dayjs from "dayjs";
 import TextField from "@mui/material/TextField";
@@ -33,7 +34,7 @@ const PatientForm = ({setAddPatient, setToggleNew, setPatient,patientList, setPa
         "dob": dayjs(DOB).format("YYYY-MM-DD HH:mm:ss"),
         "mobile": phone
       }
-      const response = await axios.post(`http://127.0.0.1:5000/add_patient`, data, {
+      const response = await axios.post(`${API_BASE_URL}/add_patient`, data, {
         headers: {
           'Content-Type': 'application/json'
         }

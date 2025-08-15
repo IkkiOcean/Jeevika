@@ -1,9 +1,9 @@
 import "./../App.css";
-import { QrReader } from "react-qr-reader";
-import React, { useEffect, useState } from "react";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { API_BASE_URL, RETURN_URL } from "../config";
 import { useNavigate } from "react-router-dom";
-// import pgPromise from 'pg-promise';
 import {load} from '@cashfreepayments/cashfree-js';
 
 let cashfree;
@@ -13,23 +13,48 @@ var initializeSDK = async function () {
     });
 };
 initializeSDK();
+
 function Scanner() {
   const [data, setData] = useState([]);
   const [isScanned, setIsScanned] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [medicines, setMedicines] = useState([]);
   const [loadingText, setLoadingText] = useState('');
+  const scannerRef = useRef(null);
   let totalPrice = 0;
   const navigator = useNavigate();
-  console.log("start");
   
+  // Initialize scanner when component mounts
+  useEffect(() => {
+    if (!isScanned && !isLoading) {
+      const scanner = new Html5QrcodeScanner(
+        "reader",
+        { 
+          fps: 10, 
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0
+        },
+        false
+      );
+      
+      scanner.render(loadData, (error) => {
+        console.warn(error);
+      });
+      
+      scannerRef.current = scanner;
+    }
+    
+    // Cleanup scanner when component unmounts
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+      }
+    };
+  }, [isScanned, isLoading]);
 
-  // useEffect(()=>{
-  //   checkStock(1);
-  // },[data])
   async function checkStock(id, needQty) {
     var medData = { isAvailable: false, data: {}, qty: 0 };
-    await axios.get(`http://127.0.0.1:5000/stock/${id}`).then((res) => {
+    await axios.get(`${API_BASE_URL}/stock/${id}`).then((res) => {
       var isAvailable = res.data.stock >= needQty;
       medData.data = res.data;
       medData.qty = needQty;
@@ -37,14 +62,88 @@ function Scanner() {
     });
     return medData;
   }
-  // [{"id": 1, "medicine_id": 999, "medicine_name": "paracetamol", "quantity": 3}, {"id": 2, "medicine_id": 998, "medicine_name": "cplox", "quantity": 6}]
 
-  async function loadData(result, error) {
-    if (!!result) {
+  async function loadData(decodedText, decodedResult) {
+    if (!!decodedText) {
       setLoading(true);
-      var dd = JSON.parse(atob(result?.text));
+      setLoadingText("Processing prescription...");
+      
+      // Clear the scanner
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+      }
+      
+      const decodeQrPayload = (text) => {
+        if (!text) return null;
+        let payload = String(text).trim();
+        console.log('Raw QR payload length:', payload.length);
+        console.log('Raw QR payload (start):', payload.slice(0, 80));
+        console.log('Raw QR payload (end):', payload.slice(-80));
+        
+        // Strip data URL prefix if present
+        const dataUrlMatch = payload.match(/^data:[^;]+;base64,(.+)$/i);
+        if (dataUrlMatch) {
+          payload = dataUrlMatch[1];
+          console.log('After stripping data URL prefix');
+        }
+        
+        // Handle Python bytes repr b'...'/b"..."
+        if ((payload.startsWith("b'") && payload.endsWith("'")) || (payload.startsWith('b"') && payload.endsWith('"'))) {
+          payload = payload.slice(2, -1);
+          console.log('After removing Python b wrapper');
+        }
+        
+        // If it already looks like JSON, try parsing directly
+        if ((payload.startsWith('{') && payload.endsWith('}')) || (payload.startsWith('[') && payload.endsWith(']'))) {
+          try {
+            return JSON.parse(payload);
+          } catch (_) {}
+        }
+        
+        // Try percent-decoding then JSON
+        try {
+          const maybePlain = decodeURIComponent(payload);
+          if ((maybePlain.startsWith('{') && maybePlain.endsWith('}')) || (maybePlain.startsWith('[') && maybePlain.endsWith(']'))) {
+            return JSON.parse(maybePlain);
+          }
+        } catch (_) {}
+        
+        // Remove whitespace/newlines (including NBSP)
+        payload = payload.replace(/[\s\u00A0]+/g, '');
+        
+        // Convert URL-safe base64 to standard (if using urlsafe_b64encode)
+        payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+        
+        // Base64 sanity check (allow padding)
+        const base64Re = /^[A-Za-z0-9+/]+={0,2}$/;
+        if (!base64Re.test(payload)) {
+          console.error('QR payload is not valid base64 after normalization');
+          return null;
+        }
+        
+        // Fix padding
+        const padLen = payload.length % 4;
+        if (padLen) payload += '='.repeat(4 - padLen);
+        
+        try {
+          const jsonStr = atob(payload).replace(/^\uFEFF/, ''); // strip BOM
+          console.log('Decoded JSON string length:', jsonStr.length);
+          return JSON.parse(jsonStr);
+        } catch (e) {
+          console.error('Failed to decode/parse QR payload:', e);
+          return null;
+        }
+      };
+
+      var dd = decodeQrPayload(decodedText);
+      if (!dd) {
+        console.error('Failed to decode QR payload');
+        setLoading(false);
+        return;
+      }
       var meds = [];
       setMedicines(meds);
+      
       dd.map(async (d) => {
         var med = await checkStock(d.medicine_id, d.quantity);
         meds.push(med);
@@ -55,25 +154,21 @@ function Scanner() {
         }
       });
     }
-    if (!!error) {
-      console.info(error);
-    }
   }
 
-  const totalPriceofdata = ()=>{
+  const totalPriceofdata = () => {
     let y = 0;
     medicines.map((item, index) => {
       console.log(item.data.price)
       if(item.isAvailable){
-
         y = y + parseFloat(item.data.price) * parseFloat(item.qty);
       }
     });
     totalPrice = y;
     return y;
   }
-  const handleRedirect = async()=>{
-    
+
+  const handleRedirect = async() => {
     const order_detail = {
       customer_id : '12345',
       amount : totalPrice,
@@ -84,7 +179,7 @@ function Scanner() {
     }
     let sessionID;
     let orderID;
-    await axios.post(`http://127.0.0.1:5000/create-order`, order).then((res) => {
+    await axios.post(`${API_BASE_URL}/create-order`, order).then((res) => {
       console.log(res);
       console.log(res.data);
       sessionID = res.data.payment_session_id;
@@ -93,132 +188,191 @@ function Scanner() {
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: 'http://localhost:3000/dispense-med?id={order_id}',
+      returnUrl: RETURN_URL,
       appearance: {
           width: "425px",
           height: "700px",
       },
-  };
-  cashfree.checkout(checkoutOptions).then((result) => {
+    };
+    
+    cashfree.checkout(checkoutOptions).then((result) => {
       if (result.error) {
-        // This will be true when there is any error during the payment
         console.log("There is some payment error, Check for Payment Status");
         console.log(result.error);
       }
       if (result.redirect) {
-        // This will be true when the payment redirection page couldnt be opened in the same window
-        // This is an exceptional case only when the page is opened inside an inAppBrowser
-        // In this case the customer will be redirected to return url once payment is completed
         console.log("Payment will be redirected");
       }
       if (result.paymentDetails) {
-        // This will be called whenever the payment is completed irrespective of transaction status
         console.log("Payment has been completed, Check for Payment Status");
         console.log(result.paymentDetails.paymentMessage);
       }
- });
+    });
   }
+
+  const resetScanner = () => {
+    setIsScanned(false);
+    setMedicines([]);
+    setData([]);
+    // Reinitialize scanner
+    setTimeout(() => {
+      if (!scannerRef.current) {
+        const scanner = new Html5QrcodeScanner(
+          "reader",
+          { 
+            fps: 10, 
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+          },
+          false
+        );
+        
+        scanner.render(loadData, (error) => {
+          console.warn(error);
+        });
+        
+        scannerRef.current = scanner;
+      }
+    }, 100);
+  };
+
   return isLoading ? (
-    <div className="w-full flex justify-center flex-col items-center" style={{height:"100vh"}}>
-      <div role="status">
-        <svg
-          aria-hidden="true"
-          class="w-32 h-32 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-          viewBox="0 0 100 101"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-            fill="currentColor"
-          />
-          <path
-            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-            fill="currentFill"
-          />
-        </svg>
-        <span class="sr-only">Loading...</span>
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-indigo-800 flex flex-col justify-center items-center p-8">
+      <div className="text-center space-y-12">
+        <div className="relative">
+          <div className="w-32 h-32 border-6 border-blue-300 border-t-white rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-white rounded-full shadow-lg"></div>
+          </div>
+        </div>
+        <h3 className="text-3xl font-bold text-white max-w-lg leading-relaxed">{loadingText}</h3>
       </div>
-      <h3 className="text-3xl">{loadingText}</h3>
     </div>
   ) : isScanned == true && medicines.length > 0 ? (
-    <div
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
-      <h1 className="text-3xl font-bold p-5 text-center">Jeevika</h1>
-      <div className="container-fluid px-5">
-        <ul role="list" className="divide-y divide-gray-100">
-          {medicines.map((item, index) => {
-            return (
-              <li className="flex justify-between gap-x-6 py-5 p-2 w-full">
-                <div className="flex justify-between w-full">
-                  <div className="min-w-0 flex-auto ">
-                    <p className={item.isAvailable ? 'text-sm font-semibold leading-6 text-gray-900' : 'text-sm font-semibold leading-6 text-red-500'}>
-                      {item.data.medicine_name}
-                    </p>
-                    <p className={item.isAvailable ? 'mt-1 truncate text-xs leading-5 text-gray-500':'mt-1 truncate text-xs leading-5 text-red-400'}>
-                      Price : ₹{item.data.price}
-                    </p>
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-indigo-800 flex flex-col">
+      {/* Header */}
+      <div className="text-center py-8 px-6">
+        <h1 className="text-6xl font-black text-white mb-4 tracking-wide">Jeevika</h1>
+        <div className="w-32 h-2 bg-gradient-to-r from-white to-blue-200 mx-auto rounded-full shadow-lg"></div>
+        <p className="text-blue-100 text-xl mt-4 font-medium">Prescription Details</p>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 px-8 pb-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border-4 border-white/20 shadow-2xl">
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">Medicine List</h2>
+            
+            <div className="space-y-4 mb-8">
+              {medicines.map((item, index) => (
+                <div key={index} className={`p-4 rounded-2xl border-2 ${
+                  item.isAvailable 
+                    ? 'bg-emerald-500/20 border-emerald-400/30 text-white' 
+                    : 'bg-red-500/20 border-red-400/30 text-red-100'
+                }`}>
+                  <div className="flex justify-between items-center">
+                    <div className="flex-1">
+                      <p className={`text-lg font-semibold ${
+                        item.isAvailable ? 'text-white' : 'text-red-200'
+                      }`}>
+                        {item.data.medicine_name}
+                      </p>
+                      <p className={`text-sm ${
+                        item.isAvailable ? 'text-emerald-100' : 'text-red-300'
+                      }`}>
+                        Price: ₹{item.data.price}
+                      </p>
+                    </div>
+                    <div className={`text-xl font-bold ${
+                      item.isAvailable ? 'text-white' : 'text-red-200'
+                    }`}>
+                      {item.isAvailable ? `x${item.qty}` : "Out of Stock"}
+                    </div>
                   </div>
-
-                  <div className={item.isAvailable ? 'text-sm font-semibold leading-6 text-gray-900' : 'text-sm font-semibold leading-6 text-red-500'}>{item.isAvailable == false ? "Out of stock" :`x ${item.qty}`}</div>
                 </div>
-              </li>
-            );
-          })}
-          <li className="flex justify-between gap-x-6 py-5 p-2 w-full">
+              ))}
+            </div>
 
-          <p className="text-m font-semibold leading-6 text-gray-900">Total Pricing : ₹{totalPriceofdata()}</p>
-          </li>
-        </ul>
+            {/* Total Price */}
+            <div className="bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-2xl p-6 mb-8 border-2 border-white/20">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-white">Total Amount</p>
+                <p className="text-4xl font-black text-white">₹{totalPriceofdata()}</p>
+              </div>
+            </div>
 
+            {/* Action Buttons */}
+            <div className="space-y-4">
+              <button
+                className={`w-full rounded-2xl px-6 py-4 text-lg font-bold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-emerald-300/50 ${
+                  totalPrice > 0
+                    ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white border-2 border-emerald-400/30"
+                    : "bg-gray-400 text-gray-200 cursor-not-allowed border-2 border-gray-400/20"
+                }`}
+                onClick={handleRedirect}
+                disabled={!(totalPrice > 0)}
+              >
+                {totalPrice > 0 ? "Proceed to Payment" : "No Items Available"}
+              </button>
 
-        <button
-          className={totalPrice>0?"mt-10 mb-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600":"mt-10 mb-10 block w-full rounded-md bg-indigo-300 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm  focus-visible:outline "}
-          onClick={handleRedirect}
-          disabled = {!(totalPrice>0)}
-        >
-          Proceed to Pay
-        </button>
-        <button
-          className="mt-10 mb-10 block w-full rounded-md bg-red-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-          onClick={()=>{
-            navigator('/')
-          }}
-        >
-          Cancel{" "}
-        </button>
+              <button
+                className="w-full rounded-2xl px-6 py-4 text-lg font-bold bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-2 border-red-400/30 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-red-300/50"
+                onClick={resetScanner}
+              >
+                Scan New Prescription
+              </button>
+
+              <button
+                className="w-full rounded-2xl px-6 py-4 text-lg font-bold bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white border-2 border-gray-400/30 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-gray-300/50"
+                onClick={() => navigator('/')}
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   ) : (
-    <div className="body">
-      <div className="overlay" />
-      <h1 className="text-5xl font-bold text-center mt-3 mb-20 up">Scan QR Code</h1>
-      <div className="scanner">
-        <QrReader
-          constraints={{
-            facingMode: "environment",
-          }}
-          className="shadow-lg"
-          videoStyle={{
-            height: "400px",
-            width: "400px",
-            border: "5px solid skyblue",
-            borderRadius: 10,
-            objectFit: "cover",
-          }}
-          onResult={async (result, error) => {
-            loadData(result, error);
-          }}
-          style={{ width: "100%" }}
-        />
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-indigo-800 flex flex-col">
+      {/* Header */}
+      <div className="text-center py-8 px-6">
+        <h1 className="text-6xl font-black text-white mb-4 tracking-wide">Jeevika</h1>
+        <div className="w-32 h-2 bg-gradient-to-r from-white to-blue-200 mx-auto rounded-full shadow-lg"></div>
+        <p className="text-blue-100 text-xl mt-4 font-medium">Scan QR Code</p>
       </div>
-      {/* <p>{data}</p> */}
+
+      {/* Scanner Section */}
+      <div className="flex-1 px-8 pb-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border-4 border-white/20 shadow-2xl">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">Position QR Code</h2>
+              <p className="text-blue-100 text-lg">Align the prescription QR code within the scanner frame</p>
+            </div>
+            
+            <div className="flex justify-center">
+              <div 
+                id="reader"
+                className="rounded-2xl overflow-hidden border-4 border-white/30 shadow-2xl"
+                style={{
+                  width: "100%",
+                  maxWidth: "400px"
+                }}
+              ></div>
+            </div>
+
+            <div className="text-center mt-8">
+              <button
+                className="rounded-2xl px-6 py-3 text-lg font-bold bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white border-2 border-gray-400/30 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-gray-300/50"
+                onClick={() => navigator('/')}
+              >
+                Back to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

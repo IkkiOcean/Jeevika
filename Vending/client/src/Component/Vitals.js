@@ -2,6 +2,7 @@ import React, {useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './vitals.css'
 import axios from 'axios'
+import { API_BASE_URL } from "../config";
 const Vital = ()=>{
     const [isLoading, setLoading] = useState(false);
     const [loadingText, setLoadingText] = useState('');
@@ -9,7 +10,7 @@ const Vital = ()=>{
     let navigator = useNavigate();
     async function handleVitals(){
       document.getElementById('scan-btn').textContent = 'Scanning'
-      await axios.get(`http://127.0.0.1:5000/vitals`).then((res) => {
+      await axios.get(`${API_BASE_URL}/vitals`).then((res) => {
       
       // console.log(res);
       // console.log(res.data);

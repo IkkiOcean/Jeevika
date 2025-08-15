@@ -1,70 +1,131 @@
 import React, { useState } from "react";
-import "./App.css";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  FileText, 
+  Heart, 
+  Pill, 
+  Lightbulb 
+} from "lucide-react";
+
 function Home() {
   let navigate = useNavigate();
-  const [isLoading,setLoading] = useState(false);
-  const [loadingText,setLoadingText] = useState("");
-  return (isLoading ? (
-    <div className="w-full flex justify-center flex-col items-center" style={{height:"100vh"}}>
-    <div role="status">
-      <svg
-        aria-hidden="true"
-        class="w-32 h-32 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-        viewBox="0 0 100 101"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-          fill="currentColor"
-        />
-        <path
-          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentFill"
-        />
-      </svg>
-      <span class="sr-only">Loading...</span>
-    </div>
-    <h3 className="text-3xl">{loadingText}</h3>
-  </div>
-  ):(
-    <div className="body">
-      <div className="overlay" />
-      <h1 className="text-5xl font-bold text-center mt-3 uppercase up underline">Jeevika</h1>
-      <div className="grid">
-        <div>
-          <button style={{backgroundColor: '#0acfab', opacity: '0.7'}}
-            onClick={() => {
-              navigate("/scan");
-            }}
-          >
-            Scan your Prescription
-          </button>
-          <button style={{backgroundColor: '#cc67eb', opacity: '0.7'}} onClick={()=>{
-            navigate('/vital')
-          }}>
-            Scan Vitals
-          </button>
+  const [isLoading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("");
+
+  return isLoading ? (
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-indigo-800 flex flex-col justify-center items-center p-8">
+      <div className="text-center space-y-12">
+        <div className="relative">
+          <div className="w-32 h-32 border-6 border-blue-300 border-t-white rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-white rounded-full shadow-lg"></div>
+          </div>
         </div>
-        <div>
-          <button  style={{backgroundColor: '#f24b80', opacity: '0.7'}} 
-          onClick={() => {
+        <h3 className="text-3xl font-bold text-white max-w-lg leading-relaxed">{loadingText}</h3>
+      </div>
+    </div>
+  ) : (
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 via-blue-700 to-indigo-800 flex flex-col">
+      {/* Header - Compact for portrait */}
+      <div className="text-center py-8 px-6">
+        <h1 className="text-6xl font-black text-white mb-4 tracking-wide">
+          Jeevika
+        </h1>
+        <div className="w-32 h-2 bg-gradient-to-r from-white to-blue-200 mx-auto rounded-full shadow-lg"></div>
+        <p className="text-blue-100 text-xl mt-4 font-medium">Healthcare Vending Machine</p>
+      </div>
+
+      {/* Main Content - Single column for portrait */}
+      <div className="flex-1 px-8 pb-8">
+        <div className="max-w-2xl mx-auto space-y-6">
+          
+          {/* Scan Prescription - Primary action */}
+          <button
+            onClick={() => navigate("/scan")}
+            className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-3xl p-8 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-6 focus:ring-emerald-300/50 border-4 border-emerald-400/30"
+          >
+            <div className="flex items-center space-x-8">
+              <div className="bg-white/25 p-6 rounded-2xl backdrop-blur-sm shadow-lg">
+                <FileText className="w-12 h-12" />
+              </div>
+              <div className="text-left flex-1">
+                <h3 className="text-3xl font-black leading-tight mb-2">Scan Prescription</h3>
+                <p className="text-emerald-100 text-lg opacity-95 font-medium">Upload and process medical prescriptions instantly</p>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+          </button>
+
+          {/* Scan Vitals */}
+          <button
+            onClick={() => navigate('/vital')}
+            className="w-full group relative overflow-hidden bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-3xl p-8 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-6 focus:ring-purple-300/50 border-4 border-purple-400/30"
+          >
+            <div className="flex items-center space-x-8">
+              <div className="bg-white/25 p-6 rounded-2xl backdrop-blur-sm shadow-lg">
+                <Heart className="w-12 h-12" />
+              </div>
+              <div className="text-left flex-1">
+                <h3 className="text-3xl font-black leading-tight mb-2">Scan Vitals</h3>
+                <p className="text-purple-100 text-lg opacity-95 font-medium">Monitor your health metrics and vitals</p>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
+          </button>
+
+          {/* Over Counter Medicine */}
+          <button
+            onClick={() => {
               setLoading(true);
-              setLoadingText("Fetching available medicines")
+              setLoadingText("Fetching available medicines");
               navigate("/counter");
-            }}>
-            Get over the counter medicine
+            }}
+            className="w-full group relative overflow-hidden bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white rounded-3xl p-8 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-6 focus:ring-rose-300/50 border-4 border-rose-400/30"
+          >
+            <div className="flex items-center space-x-8">
+              <div className="bg-white/25 p-6 rounded-2xl backdrop-blur-sm shadow-lg">
+                <Pill className="w-12 h-12" />
+              </div>
+              <div className="text-left flex-1">
+                <h3 className="text-3xl font-black leading-tight mb-2">Over Counter Medicine</h3>
+                <p className="text-rose-100 text-lg opacity-95 font-medium">Access non-prescription medications</p>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"></div>
           </button>
-          <button style={{backgroundColor: '#e8d066', opacity: '0.7'}}disabled>
-            Get Medicine Recommendation
-            
+
+          {/* Medicine Recommendation - Disabled */}
+          <button
+            disabled
+            className="w-full group relative overflow-hidden bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-3xl p-8 transition-all duration-300 opacity-50 cursor-not-allowed border-4 border-gray-400/20"
+          >
+            <div className="flex items-center space-x-8">
+              <div className="bg-white/15 p-6 rounded-2xl backdrop-blur-sm">
+                <Lightbulb className="w-12 h-12" />
+              </div>
+              <div className="text-left flex-1">
+                <h3 className="text-3xl font-black leading-tight mb-2">Medicine Recommendation</h3>
+                <p className="text-gray-200 text-lg opacity-80 font-medium">AI-powered medication suggestions (Coming Soon)</p>
+              </div>
+            </div>
           </button>
+
+        </div>
+      </div>
+
+      {/* Footer - Minimal for space efficiency */}
+      <div className="text-center py-6 px-6 bg-black/10 backdrop-blur-sm">
+        <p className="text-blue-100 text-lg font-medium">
+          Touch any option above to begin
+        </p>
+        <div className="flex justify-center mt-4 space-x-2">
+          <div className="w-3 h-3 bg-white/50 rounded-full"></div>
+          <div className="w-3 h-3 bg-white/50 rounded-full"></div>
+          <div className="w-3 h-3 bg-white/50 rounded-full"></div>
         </div>
       </div>
     </div>
-  ));
+  );
 }
 
 export default Home;

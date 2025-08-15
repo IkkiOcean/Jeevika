@@ -1,5 +1,6 @@
 import "./prescription.css";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 import PatientForm from "../component/PatientForm";
@@ -171,10 +172,10 @@ export {Prescription};
 export const loadPriscription = async()=> {
   var medData;
   var patData;
-  await axios.get(`http://127.0.0.1:5000/fetch_medicine_name`).then((res) => {
+  await axios.get(`${API_BASE_URL}/fetch_medicine_name`).then((res) => {
     medData = res.data;
   });
-  await axios.get(`http://127.0.0.1:5000/fetch_patientlist`).then((res) => {
+  await axios.get(`${API_BASE_URL}/fetch_patientlist`).then((res) => {
     patData = res.data;
   });
   var Data = {

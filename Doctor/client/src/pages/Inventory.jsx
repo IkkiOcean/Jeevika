@@ -1,5 +1,6 @@
 import './inventory.css'
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 import React, { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 const Inventory = ()=>{
@@ -65,7 +66,7 @@ const Inventory = ()=>{
 
 export const  checkInventory = async()=> {
     var medData;
-    await axios.get(`http://127.0.0.1:5000/fetch_data/1`).then((res) => {
+    await axios.get(`${API_BASE_URL}/fetch_data/1`).then((res) => {
       medData = res.data;
     });
     console.log(medData)

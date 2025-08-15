@@ -1,13 +1,12 @@
 import "./../App.css";
 import "./counter.css"
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
 import NumberInput from './quantity.js'
-import { TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL, RETURN_URL } from "../config";
 import { useLoaderData } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { X } from 'lucide-react';
 
 import {load} from '@cashfreepayments/cashfree-js';
 
@@ -32,6 +31,7 @@ const Counter = ()=>{
   const [meds,setMeds] = useState(data);
   const [resultStatus,setResultStatus] = useState("");
   const [loadingText, setLoadingText] = useState('');
+  const navigator = useNavigate();
   if(meds.length == 0){
     return (
       <div className="container">
@@ -90,7 +90,7 @@ const Counter = ()=>{
     }
     let sessionID;
     let orderID;
-    await axios.post(`http://127.0.0.1:5000/create-order`, order).then((res) => {
+    await axios.post(`${API_BASE_URL}/create-order`, order).then((res) => {
       console.log(res);
       console.log(res.data);
       sessionID = res.data.payment_session_id;
@@ -99,7 +99,7 @@ const Counter = ()=>{
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: 'http://localhost:3000/dispense-med?id={order_id}',
+      returnUrl: RETURN_URL,
       appearance: {
           width: "425px",
           height: "700px",
@@ -172,7 +172,7 @@ const Counter = ()=>{
   }
 
   
-  const navigator = useNavigate();
+  
   
   // const isLoading = (navigator.state === "loading");
     return (isLoading ? (
@@ -338,56 +338,58 @@ const Counter = ()=>{
         
       </div>
     </div>
-    <Modal open={open} onClose={handleClose}>
-              <Box sx={ {
-            position: "absolute",
-            // display: 'flex',
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "fit-content",
-            height : 'fit-content',
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            alignItems:"center",
-        justifyContent:"center",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: "15px",
-          }}>
-              <h1 className="modal-text">Quantity:</h1>
-              <NumberInput aria-label="Quantity Input" min={1} max={currentItem.stock} 
-              
-              onChange={(event, newValue) => {setAmount(newValue*currentItem.price)
-                console.log(newValue)
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${open ? 'block' : 'hidden'}`}>
+      <div className="fixed inset-0 bg-black bg-opacity-50" onClick={handleClose}></div>
+      <div className="relative bg-white rounded-2xl border-2 border-black p-6 shadow-2xl max-w-sm w-full mx-4">
+        <h1 className="modal-text text-center mb-4">Quantity:</h1>
+        <div className="flex justify-center mb-4">
+          <NumberInput 
+            aria-label="Quantity Input" 
+            min={1} 
+            max={currentItem.stock} 
+            onChange={(event, newValue) => {
+              setAmount(newValue*currentItem.price)
+              console.log(newValue)
               setTempCount(newValue);
-              }}/>
-              <h1 className="modal-text">Amount:</h1>
-              <TextField
-              sx={{input: {textAlign: "center"}}}
-                disabled
-               id="outlined-basic"
-               defaultValue='0'
-               value={`₹${amount}`}
-              variant="outlined" />
-          <button disabled = {!(tempCount>0)} onClick={()=>{
+            }}
+          />
+        </div>
+        <h1 className="modal-text text-center mb-4">Amount:</h1>
+        <div className="flex justify-center mb-6">
+          <input
+            disabled
+            id="outlined-basic"
+            defaultValue='0'
+            value={`₹${amount}`}
+            className="w-full text-center text-lg font-medium p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
+            readOnly
+          />
+        </div>
+        <button 
+          disabled={!(tempCount>0)} 
+          onClick={()=>{
             setTotalPrice(totalPrice + amount);
             handleCart(currentItem,tempCount);
-          handleClose();
+            handleClose();
             handleButtonChange(currentItem.medicine_id);
-        }
-            }id="done-button" class={(tempCount>0)?"mt-5 w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600":"mt-5 w-full rounded-md bg-indigo-300 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm  focus-visible:outline"} >Done</button>
-                <img
-                    src="./crossIcon.png"
-                    alt=""
-                    className="viewMore"
-                    onClick={handleClose}
-                  />
-                
-                
-                  
-              </Box>
-            </Modal>
+          }}
+          id="done-button" 
+          className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-colors ${
+            tempCount > 0 
+              ? "bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" 
+              : "bg-indigo-300 cursor-not-allowed"
+          }`}
+        >
+          Done
+        </button>
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <X size={20} className="text-gray-600" />
+        </button>
+      </div>
+    </div>
   
   </>
 )
@@ -398,7 +400,7 @@ const Counter = ()=>{
 
 export const  checkStock = async()=> {
   var medData;
-  await axios.get(`http://127.0.0.1:5000/get_data/1`).then((res) => {
+  await axios.get(`${API_BASE_URL}/get_data/1`).then((res) => {
     medData = res.data;
   });
   return medData;
