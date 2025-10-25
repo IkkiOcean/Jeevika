@@ -4,20 +4,8 @@
   "private": true,
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.4",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@fortawesome/fontawesome-svg-core": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.5.1",
-    "@fortawesome/react-fontawesome": "^0.2.0",
-    "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
-    "@material-ui/core": "^4.12.4",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.3",
+    "html5-qrcode": "^2.3.8",
     "install": "^0.13.0",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
@@ -28,7 +16,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
-    "react-qr-reader": "^3.0.0-beta-1",
+    "react-qr-barcode-scanner": "^2.1.8",
     "react-router-dom": "^6.21.3",
     "react-scripts": "5.0.1",
     "sort-by": "^1.2.0",
@@ -58,6 +46,6 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.3.5"
+    "tailwindcss": "^3.4.1"
   }
 }

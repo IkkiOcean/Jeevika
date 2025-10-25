@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from 'react'
 import axios from 'axios';
+import { API_BASE_URL } from "../config";
 import { useNavigate,useSearchParams } from 'react-router-dom';
 const Dispense =()=> {
 const [isLoading, setLoading] = useState(false);
@@ -9,7 +10,7 @@ const id = searchParams.get("id");
 
 useEffect(()=>{
     let medicines
-    axios.get(`http://127.0.0.1:5000/fetch-order?id=${id}`).then((res) => {
+    axios.get(`${API_BASE_URL}/fetch-order?id=${id}`).then((res) => {
         console.log(res);
         console.log(res.data);
         medicines = res.data.medicine_id.map((medicine_id, i) => {
@@ -19,7 +20,7 @@ useEffect(()=>{
             };
           });
           console.log(medicines);
-          axios.post(`http://127.0.0.1:5000/dispense`, medicines).then((res) => {
+          axios.post(`${API_BASE_URL}/dispense`, medicines).then((res) => {
                 console.log(res);
                 console.log(res.data);
                 navigator("/thank");

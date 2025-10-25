@@ -1,141 +1,64 @@
 import * as React from 'react';
-import { Unstable_NumberInput as BaseNumberInput } from '@mui/base/Unstable_NumberInput';
-import { styled } from '@mui/system';
-import RemoveIcon from '@mui/icons-material/Remove';
-import AddIcon from '@mui/icons-material/Add';
+import { Minus, Plus } from 'lucide-react';
 
-const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
+const NumberInput = React.forwardRef(function CustomNumberInput({ min = 1, max = 999, onChange, ...props }, ref) {
+  const [value, setValue] = React.useState(min);
+
+  const handleIncrement = () => {
+    if (value < max) {
+      const newValue = value + 1;
+      setValue(newValue);
+      onChange?.(null, newValue);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (value > min) {
+      const newValue = value - 1;
+      setValue(newValue);
+      onChange?.(null, newValue);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const newValue = parseInt(e.target.value) || min;
+    const clampedValue = Math.max(min, Math.min(max, newValue));
+    setValue(clampedValue);
+    onChange?.(null, clampedValue);
+  };
+
   return (
-    <BaseNumberInput
-      slots={{
-        root: StyledInputRoot,
-        input: StyledInput,
-        incrementButton: StyledButton,
-        decrementButton: StyledButton,
-      }}
-      slotProps={{
-        incrementButton: {
-          children: <AddIcon fontSize="small" />,
-          className: 'increment',
-        },
-        decrementButton: {
-          children: <RemoveIcon fontSize="small" />,
-        },
-      }}
-      {...props}
-      ref={ref}
-    />
+    <div className="flex items-center justify-center space-x-2">
+      <button
+        onClick={handleDecrement}
+        disabled={value <= min}
+        className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        type="button"
+      >
+        <Minus size={16} />
+      </button>
+      
+      <input
+        ref={ref}
+        type="number"
+        min={min}
+        max={max}
+        value={value}
+        onChange={handleInputChange}
+        className="w-16 h-8 text-center text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        {...props}
+      />
+      
+      <button
+        onClick={handleIncrement}
+        disabled={value >= max}
+        className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        type="button"
+      >
+        <Plus size={16} />
+      </button>
+    </div>
   );
 });
 
-
-
-const blue = {
-  100: '#daecff',
-  200: '#b6daff',
-  300: '#66b2ff',
-  400: '#3399ff',
-  500: '#007fff',
-  600: '#0072e5',
-  700: '#0059B2',
-  800: '#004c99',
-};
-
-const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
-};
-
-const StyledInputRoot = styled('div')(
-  ({ theme }) => `
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 400;
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[500]};
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-`,
-);
-
-const StyledInput = styled('input')(
-  ({ theme }) => `
-  font-size: 0.875rem;
-  font-family: inherit;
-  font-weight: 400;
-  line-height: 1.375;
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 4px ${
-    theme.palette.mode === 'dark' ? 'rgba(0,0,0, 0.5)' : 'rgba(0,0,0, 0.05)'
-  };
-  border-radius: 8px;
-  margin: 0 8px;
-  padding: 10px 12px;
-  outline: 0;
-  min-width: 0;
-  width: 4rem;
-  text-align: center;
-
-  &:hover {
-    border-color: ${blue[400]};
-  }
-
-  &:focus {
-    border-color: ${blue[400]};
-    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[700] : blue[200]};
-  }
-
-  &:focus-visible {
-    outline: 0;
-  }
-`,
-);
-
-const StyledButton = styled('button')(
-  ({ theme }) => `
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.875rem;
-  box-sizing: border-box;
-  line-height: 1.5;
-  border: 1px solid;
-  border-radius: 999px;
-  border-color: ${theme.palette.mode === 'dark' ? grey[800] : grey[200]};
-  background: ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
-  color: ${theme.palette.mode === 'dark' ? grey[200] : grey[900]};
-  width: 32px;
-  height: 32px;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 120ms;
-
-  &:hover {
-    cursor: pointer;
-    background: ${theme.palette.mode === 'dark' ? blue[700] : blue[500]};
-    border-color: ${theme.palette.mode === 'dark' ? blue[500] : blue[400]};
-    color: ${grey[50]};
-  }
-
-  &:focus-visible {
-    outline: 0;
-  }
-
-  &.increment {
-    order: 1;
-  }
-`,
-);
 export default NumberInput;
