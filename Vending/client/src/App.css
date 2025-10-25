@@ -1,98 +1,35 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+/* Remove conflicting styles */
 .body {
-  height: 100vh;
-  display: flex;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  background-image:url("../assets/img/bg.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-attachment: fixed;
-}
-.overlay{
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  background-color: black;
-  opacity: 0.7;
-}
-.scanner {
-  height: 400px;
-  width: 400px;
-  z-index: 2;
-}
-.grid{
-  width: 100vw;
-  height: 100vh;
-  padding-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 100;
-}
-.grid div{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.up{
-  color: white;
-  z-index: 100;
-}
-.grid button {
-  height: 300px;
-  width: 600px;
-  margin: 10px;
-  font-size: 30px;
-  padding: 20px;
-  font-weight: bold;
-  border: 3px solid black;
-  border-radius: 10px;
-  /* From https://css.glass */
-  background: rgba(255, 255, 255, 0.24);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(7.9px);
-  -webkit-backdrop-filter: blur(7.9px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-
-}
-/* .grid div:nth-child(1) button:nth-child(1){
-  background-color: blueviolet;
-}
-.grid div:nth-child(1) button:nth-child(2){
-  background-color: indianred;
+  /* Removed height: 100vh to prevent overflow */
+  /* Removed display: flex to avoid conflicts */
+  /* Background is now handled inline in component */
 }
 
-.grid div:nth-child(2) button:nth-child(1){
-  background-color: rgb(28, 206, 255);
+/* Keep only necessary global styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-.grid div:nth-child(2) button:nth-child(2){
-  background-color: rgb(54, 241, 122);
-} */
-
-.construction{
-  animation: warn linear 1s infinite; 
-  font-size: 16px;
-}
-
-@keyframes warn {
-  from{
-    color: orange;
+@keyframes scan {
+  0% {
+    top: 0%;
   }
-  to{
-    color: blue;
+  50% {
+    top: 100%;
   }
-  
+  100% {
+    top: 0%;
+  }
+}
+
+.animate-scan {
+  animation: scan 2s linear infinite;
 }

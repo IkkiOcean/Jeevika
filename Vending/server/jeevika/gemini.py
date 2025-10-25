@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 genai.configure(api_key= os.environ.get('GEMINI_API'))
-model = genai.GenerativeModel('gemini-1.5-pro-002')
+model = genai.GenerativeModel('gemini-2.5-flash-lite')
 # Set your OpenAI API key
 
 # Define the prompt

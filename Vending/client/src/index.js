@@ -4,23 +4,21 @@ import "./index.css";
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
-  Link,
 } from "react-router-dom";
-import Home from "./Home";
-import Scanner from "./Component/Scanner"
-import Thank from "./Component/Thank";
-import Dispense from "./Component/dispense";
-import {Counter,checkStock} from "./Component/Counter";
-import Vital from "./Component/Vitals";
-import VitalReport from "./Component/vital-report";
-import Slider from "./Component/slider/slider";
+import Home from "./pages/Home";
+import Scanner from "./pages/Scanner";
+import Thank from "./pages/Thank";
+import Dispense from "./pages/dispense";
+import { Counter, checkStock } from "./pages/Counter";
+import Vital from "./pages/vitals";
+import { ThemeProvider } from './context/ThemeContext';
+import VitalReport from "./pages/vital-report";
+import Slider from "./component/slider/slider";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Home />
-    ),
+    element: <Home />,
   },
   {
     path: "scan",
@@ -49,13 +47,15 @@ const router = createBrowserRouter([
   {
     path: "counter",
     loader: checkStock,
-    element: 
-      <Counter />
-    ,
-  }
-  ,
+    element: <Counter />,
+  },
 ]);
 
+// ✅ Wrap RouterProvider with ThemeProvider
 createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <React.StrictMode>
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </React.StrictMode>
 );

@@ -261,6 +261,8 @@ def add_data2():
         return "success",200
 
 
+
+
 # @app.route('/update_machine_data',methods = ['POST'])
 # def add_data2():
 #         data = request.get_json()
@@ -308,3 +310,4 @@ Jeevika
                 print("Message sent successfully.")
         else:
                 print(f"Message failed with error: {responseData['messages'][0]['error-text']}")
+

@@ -7,24 +7,19 @@ import base64
 import json
 # Data to be encoded
 def gen_qr():
-
-    filename = "/Volumes/Vivek Drive/heisenberg_project/jeevika/helper_func/data.json"
-    
-    with open(filename) as fp:
+    filename = "./data.json"
+    with open(filename, encoding="utf-8") as fp:
         data = json.load(fp)
-        data = json.dumps(data)
-        byte_data = data.encode('utf-8')
-    
-    encoded_data = base64.b64encode(byte_data)
-    # Encoding data using make() function
-    img = qrcode.make(encoded_data)
-
-    # Saving as an image file
-    img.save('QrJeevika.png')
+    json_str = json.dumps(data, separators=(',', ':'))  # compact
+    b64 = base64.b64encode(json_str.encode('utf-8')).decode('ascii')  # plain string
+    # Or, URL-safe:
+    # b64 = base64.urlsafe_b64encode(json_str.encode('utf-8')).decode('ascii')
+    img = qrcode.make(b64)
+    img.save('QrJeevika2.png')
 
     
 def add_data(medicine_id,quantity):
-    filename = '/Volumes/Vivek Drive/heisenberg_project/jeevika/helper_func/data.json'
+    filename = './data.json'
     list = []
     data = {
         "medicine_id" : medicine_id,
