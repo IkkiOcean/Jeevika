@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import NumberInput from "../components/quantity.js";
+import NumberInput from "../components/Quantity.js";
 import axios from "axios";
 import { useLoaderData } from "react-router-dom";
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext.js';
 import {
   Search,
   ShoppingCart,
