@@ -1,9 +1,8 @@
-import React, { useEffect,useState } from 'react'
+import { useEffect} from 'react'
 import axios from 'axios';
 import { API_BASE_URL } from "../config";
 import { useNavigate,useSearchParams } from 'react-router-dom';
 const Dispense =()=> {
-const [isLoading, setLoading] = useState(false);
 let navigator = useNavigate();
 const [searchParams] = useSearchParams();
 const id = searchParams.get("id");

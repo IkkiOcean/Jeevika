@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import NumberInput from "../component/quantity.js";
 import axios from "axios";
 import { useLoaderData } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
 import {
-  Loader2,
   Search,
   ShoppingCart,
   Pill,
@@ -34,13 +32,10 @@ const Counter = () => {
   const [tempCount, setTempCount] = useState(0);
   const [currentItem, setCurrentItem] = useState(0);
   const [open, setOpen] = useState(false);
-  const [isLoading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [meds, setMeds] = useState(data);
   const [resultStatus, setResultStatus] = useState("");
-  const [loadingText, setLoadingText] = useState("");
   const { isDark } = useTheme();
-  const navigator = useNavigate();
 
   // Theme styles
   const theme = {
@@ -135,7 +130,7 @@ const Counter = () => {
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: "http://localhost:3000/dispense-med?id={order_id}",
+      returnUrl:f`http://localhost:3000/dispense-med?id=${orderID}`,
       appearance: {
         width: "425px",
         height: "700px",
@@ -183,36 +178,7 @@ const Counter = () => {
     setMeds(searchCards);
   };
 
-  return isLoading ? (
-    // Modern Loading Screen
-    <div
-      className="w-full h-screen flex justify-center flex-col items-center relative overflow-hidden"
-      style={{ background: theme.bg }}
-    >
-      {isDark && (
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse" />
-          <div
-            className="absolute w-96 h-96 bg-teal-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
-        </div>
-      )}
-
-      <Loader2
-        className="animate-spin relative z-10"
-        size={80}
-        strokeWidth={2}
-        style={{ color: isDark ? "#ffffff" : "#3b82f6" }}
-      />
-      <h3 
-        className="text-2xl md:text-3xl mt-6 font-medium text-center px-4 relative z-10"
-        style={{ color: theme.textPrimary }}
-      >
-        {loadingText}
-      </h3>
-    </div>
-  ) : (
+  return (
     <div 
       className="min-h-screen flex flex-col"
       style={{ background: theme.bg }}

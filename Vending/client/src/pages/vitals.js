@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
@@ -11,9 +11,6 @@ import {
 import Header from "../component/Header";
 
 const Vital = () => {
-  const [isLoading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState('');
-  const [vitalData, setVital] = useState([]);
   const [isScanning, setIsScanning] = useState(false);
   const { isDark } = useTheme();
   let navigator = useNavigate();
@@ -21,7 +18,7 @@ const Vital = () => {
   async function handleVitals() {
     setIsScanning(true);
     await axios.get(`http://127.0.0.1:5000/vitals`).then((res) => {
-      setVital(res.data);
+
       navigator('/vital-report', {
         state: res.data
       });
@@ -41,33 +38,7 @@ const Vital = () => {
     border: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(59, 130, 246, 0.2)"
   };
 
-  return isLoading ? (
-    // Modern Loading Screen
-    <div 
-      className="w-full h-screen flex justify-center flex-col items-center relative overflow-hidden"
-      style={{ background: theme.bg }}
-    >
-      {isDark && (
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute w-96 h-96 bg-blue-500/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse" />
-          <div className="absolute w-96 h-96 bg-teal-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-      )}
-      
-      <Loader2 
-        className="animate-spin relative z-10" 
-        size={80}
-        strokeWidth={2}
-        style={{ color: isDark ? "#ffffff" : "#3b82f6" }}
-      />
-      <h3 
-        className="text-2xl md:text-3xl mt-6 font-medium text-center px-4 relative z-10"
-        style={{ color: theme.textPrimary }}
-      >
-        {loadingText}
-      </h3>
-    </div>
-  ) : (
+  return (
     <div 
       className="w-full h-screen flex flex-col"
       style={{ background: theme.bg }}

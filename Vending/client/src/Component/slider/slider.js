@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,useState } from "react";
+import { useEffect, useRef } from "react";
 import "./slider.css";
 
 const Slider = ({setter,id,maxUnit}) => {

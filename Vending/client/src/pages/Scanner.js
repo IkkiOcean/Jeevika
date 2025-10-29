@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { QrReader } from "react-qr-reader";
+import { useState } from "react";
+import { QrReader } from "react-qr-reader-es6";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
@@ -25,7 +25,6 @@ var initializeSDK = async function () {
 initializeSDK();
 
 function Scanner() {
-  const [data, setData] = useState([]);
   const [isScanned, setIsScanned] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [medicines, setMedicines] = useState([]);
@@ -70,7 +69,7 @@ function Scanner() {
       dd.map(async (d) => {
         var med = await checkStock(d.medicine_id, d.quantity);
         meds.push(med);
-        if (meds.length == dd.length) {
+        if (meds.length === dd.length) {
           setMedicines(meds);
           setIsScanned(true);
           setLoading(false);
@@ -84,7 +83,7 @@ function Scanner() {
 
   const totalPriceofdata = () => {
     let y = 0;
-    medicines.map((item, index) => {
+    medicines.map((item) => {
       if(item.isAvailable){
         y = y + parseFloat(item.data.price) * parseFloat(item.qty);
       }
@@ -111,7 +110,7 @@ function Scanner() {
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: 'http://localhost:3000/dispense-med?id={order_id}',
+      returnUrl: f`http://localhost:3000/dispense-med?id=${orderID}`,
       appearance: {
           width: "425px",
           height: "700px",
@@ -158,7 +157,7 @@ function Scanner() {
         {loadingText}
       </h3>
     </div>
-  ) : isScanned == true && medicines.length > 0 ? (
+  ) : isScanned === true && medicines.length > 0 ? (
     // Medicine Review Screen
     <div 
       className="w-full min-h-screen flex flex-col"

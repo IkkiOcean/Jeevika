@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Slider from "../component/slider/slider";
 import Markdown from 'react-markdown';
 import { useEffect, useState } from "react";
@@ -16,7 +16,6 @@ import Header from "../component/Header";
 
 const VitalReport = () => {
     const location = useLocation();
-    const navigate = useNavigate();
     const { isDark } = useTheme();
     const data = location.state;
     const tempF = (data.temp * 9)/5 + 32;
