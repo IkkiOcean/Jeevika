@@ -1,7 +1,5 @@
-// Component/Header.js
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from './../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import { ArrowLeft, Pill, Moon, Sun } from 'lucide-react';
 
 const Header = ({ showBackButton = false, backTo = '/' }) => {

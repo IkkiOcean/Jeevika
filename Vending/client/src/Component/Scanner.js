@@ -1,6 +1,6 @@
 import "./../App.css";
 import { Html5QrcodeScanner } from "html5-qrcode";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { API_BASE_URL, RETURN_URL } from "../config";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ var initializeSDK = async function () {
 initializeSDK();
 
 function Scanner() {
-  const [data, setData] = useState([]);
   const [isScanned, setIsScanned] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [medicines, setMedicines] = useState([]);
@@ -213,7 +212,7 @@ function Scanner() {
   const resetScanner = () => {
     setIsScanned(false);
     setMedicines([]);
-    setData([]);
+
     // Reinitialize scanner
     setTimeout(() => {
       if (!scannerRef.current) {

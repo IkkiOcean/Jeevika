@@ -13,7 +13,7 @@ import {
   CreditCard,
   Package,
 } from "lucide-react";
-import Header from "../component/Header";
+import Header from "../component/Header.js";
 import { load } from "@cashfreepayments/cashfree-js";
 
 let cashfree;
