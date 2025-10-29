@@ -44,3 +44,4 @@ PyMLX90614
 smbus2
 datetime
 pytz
+python_dotenv

@@ -110,7 +110,7 @@ function Scanner() {
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: f`http://localhost:3000/dispense-med?id=${orderID}`,
+      returnUrl: `http://localhost:3000/dispense-med?id=${orderID}`,
       appearance: {
           width: "425px",
           height: "700px",
