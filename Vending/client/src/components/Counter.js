@@ -3,7 +3,7 @@ import "./counter.css"
 import NumberInput from './quantity.js'
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL, RETURN_URL } from "../config";
+import { API_BASE_URL, RETURN_URL } from "../config.js";
 import { useLoaderData } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { X } from 'lucide-react';

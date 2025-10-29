@@ -8,7 +8,7 @@ import {
   Activity,
   Sparkles
 } from "lucide-react";
-import Header from "../Comp/Header";
+import Header from "../components/Header";
 
 const Vital = () => {
   const [isScanning, setIsScanning] = useState(false);

@@ -10,7 +10,7 @@ import {
   Loader2,
   ShieldCheck
 } from "lucide-react";
-import Header from '../Comp/Header';
+import Header from '../components/Header';
 
 function Home() {
   let navigate = useNavigate();
