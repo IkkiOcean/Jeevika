@@ -13,7 +13,6 @@ import { Counter, checkStock } from "./pages/Counter";
 import Vital from "./pages/vitals";
 import { ThemeProvider } from './context/ThemeContext';
 import VitalReport from "./pages/vital-report";
-import Slider from "./component/slider/slider";
 
 const router = createBrowserRouter([
   {
@@ -35,10 +34,6 @@ const router = createBrowserRouter([
   {
     path: "vital-report",
     element: <VitalReport />,
-  },
-  {
-    path: "slider",
-    element: <Slider />,
   },
   {
     path: "dispense-med",

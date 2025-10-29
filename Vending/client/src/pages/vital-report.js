@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import Slider from "../component/slider/slider";
+import Slider from "../Comp/slider/slider";
 import Markdown from 'react-markdown';
 import { useEffect, useState } from "react";
 import { useTheme } from '../context/ThemeContext';
@@ -12,7 +12,7 @@ import {
   Calendar,
   TrendingUp
 } from "lucide-react";
-import Header from "../component/Header";
+import Header from "../Comp/Header";
 
 const VitalReport = () => {
     const location = useLocation();
