@@ -1,8 +1,9 @@
 import requests
 import json
-import urllib.parse
+import os
 import webbrowser
-callback_url = "https://localhost:3000/success"  # your callback url
+FRONTEND_URL = os.getenv("FRONTEND_URL", "")
+callback_url = FRONTEND_URL + 'success' # your callback url
 
 payload_data = {
     'key': "a87eccab-8631-47f4-aba4-11238567e968",  # replace with your live API KEY

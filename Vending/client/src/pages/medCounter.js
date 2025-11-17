@@ -130,7 +130,7 @@ const Counter = () => {
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
-      returnUrl: `http://localhost:3000/dispense-med?id=${orderID}`,
+      returnUrl: `${process.env.REACT_APP_FRONTEND_URL}/dispense-med?id=${orderID}`,
       appearance: {
         width: "425px",
         height: "700px",
