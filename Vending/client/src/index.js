@@ -7,13 +7,13 @@ import {
 } from "react-router-dom";
 import Home from "./pages/homePage";
 import ErrorPage from "./pages/error";
-import Scanner from "./pages/scanner";
-import Thank from "./pages/thank";
+import Scanner from "./pages/qrScanner";
+import Thank from "./pages/thankYou";
 import Dispense from "./pages/dispense";
 import { Counter, checkStock } from "./pages/medCounter";
 import Vital from "./pages/vitals";
 import { ThemeProvider } from './context/ThemeContext';
-import VitalReport from "./pages/vital-report";
+import VitalReport from "./pages/vitalReport";
 
 const router = createBrowserRouter([
   {
