@@ -2,7 +2,7 @@ import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import NumberInput from "../components/numberInput.js";
-import {apiGet, apiPost} from "../utils/api.js";
+import axiosInstance from "../utils/api.js";
 import { useLoaderData } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.js';
 import {
@@ -121,7 +121,8 @@ const Counter = () => {
     };
     let sessionID;
     let orderID;
-    await apiPost(`/create-order`, order)
+    await axiosInstance
+      .post(`/create-order`, order)
       .then((res) => {
         sessionID = res.data.payment_session_id;
         orderID = res.data.order_id;
@@ -566,7 +567,7 @@ const Counter = () => {
 
 export const checkStock = async () => {
   var medData;
-  await apiGet(`/get_data/1`).then((res) => {
+  await axiosInstance.get(`/get_data/1`).then((res) => {
     medData = res.data;
   });
   return medData;

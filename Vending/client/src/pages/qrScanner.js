@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { QrReader } from "react-qr-reader-es6";
-import {apiGet,apiPost} from "../utils/api";
+import { useState, useEffect } from "react";
+import QrReader from "react-qr-reader-es6";
+import axiosInstance from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -48,9 +48,17 @@ function Scanner() {
     scannerGlow: isDark ? "rgba(6, 182, 212, 0.4)" : "rgba(59, 130, 246, 0.3)"
   };
 
+  useEffect(() => {
+    return () => {
+      // Cleanup: Stop camera stream when component unmounts
+      if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Camera will be released automatically
+      }
+    };
+  }, []);
   async function checkStock(id, needQty) {
     var medData = { isAvailable: false, data: {}, qty: 0 };
-    await apiGet(`/stock/${id}`).then((res) => {
+    await axiosInstance.get(`/stock/${id}`).then((res) => {
       var isAvailable = res.data.stock >= needQty;
       medData.data = res.data;
       medData.qty = needQty;
@@ -103,7 +111,7 @@ function Scanner() {
     }
     let sessionID;
     let orderID;
-    await apiPost(`/create-order`, order).then((res) => {
+    await axiosInstance.post(`/create-order`, order).then((res) => {
       sessionID = res.data.payment_session_id;
       orderID = res.data.order_id;
     });
@@ -421,20 +429,26 @@ function Scanner() {
                 border: `4px solid ${theme.scannerBorder}`
               }}
             >
-              <QrReader
-                constraints={{
-                  facingMode: "environment",
-                }}
-                videoStyle={{
-                  width: "100%",
-                  height: "400px",
-                  objectFit: "cover",
-                }}
-                onResult={async (result, error) => {
-                  loadData(result, error);
-                }}
-                style={{ width: "100%" }}
-              />
+             <QrReader
+  constraints={{
+    facingMode: "environment",
+  }}
+  videoStyle={{
+    width: "100%",
+    height: "400px",
+    objectFit: "cover",
+  }}
+  onScan={async (result) => {
+    if (result) {
+      loadData(result, null);
+    }
+  }}
+  onError={(error) => {
+    console.error("QR Reader Error:", error);
+  }}
+  style={{ width: "100%" }}
+/>
+
               
               {/* Scanning Overlay */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
