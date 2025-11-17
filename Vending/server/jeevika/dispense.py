@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import time
 import atexit
 
@@ -63,13 +63,13 @@ def dispense_med(medicine_id, address, quantity):
             raise ValueError(f"Invalid address {address}. Must be 1-4.")
 
         # Reinitialize GPIO on every call
-        init_gpio()
+        # init_gpio()
 
         print(f"\n[INFO] Dispensing {quantity} unit(s) of '{medicine_id}' from slot {address}")
 
         for i in range(quantity):
             print(f"  -> Dispensing unit {i+1}/{quantity}")
-            step_motor(address, STEPS_PER_REV)
+            # step_motor(address, STEPS_PER_REV)
             print("     ✓ Dispensed successfully!")
 
         print(f"[DONE] {quantity} unit(s) of '{medicine_id}' dispensed from address {address}")
@@ -81,4 +81,4 @@ def dispense_med(medicine_id, address, quantity):
 # ---------------------------------------------------------
 #   AUTO CLEAN GPIO ONLY ON SERVER SHUTDOWN
 # ---------------------------------------------------------
-atexit.register(GPIO.cleanup)
+# atexit.register(GPIO.cleanup)

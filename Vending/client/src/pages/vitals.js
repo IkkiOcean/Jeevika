@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/api.js";
+import {apiGet} from "../utils/api.js";
 import { useTheme } from '../context/ThemeContext';
 import { 
   Loader2, 
@@ -17,7 +17,7 @@ const Vital = () => {
 
   async function handleVitals() {
     setIsScanning(true);
-    await axiosInstance.get(`/vitals`).then((res) => {
+    await apiGet(`/vitals`).then((res) => {
 
       navigator('/vital-report', {
         state: res.data

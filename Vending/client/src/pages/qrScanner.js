@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QrReader } from "react-qr-reader-es6";
-import axiosInstance from "../utils/api";
+import {apiGet,apiPost} from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -50,7 +50,7 @@ function Scanner() {
 
   async function checkStock(id, needQty) {
     var medData = { isAvailable: false, data: {}, qty: 0 };
-    await axiosInstance.get(`/stock/${id}`).then((res) => {
+    await apiGet(`/stock/${id}`).then((res) => {
       var isAvailable = res.data.stock >= needQty;
       medData.data = res.data;
       medData.qty = needQty;
@@ -103,7 +103,7 @@ function Scanner() {
     }
     let sessionID;
     let orderID;
-    await axiosInstance.post(`/create-order`, order).then((res) => {
+    await apiPost(`/create-order`, order).then((res) => {
       sessionID = res.data.payment_session_id;
       orderID = res.data.order_id;
     });

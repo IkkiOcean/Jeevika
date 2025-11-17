@@ -1,5 +1,5 @@
 import { useEffect} from 'react'
-import axiosInstance from "../utils/api";
+import {apiGet, apiPost} from "../utils/api";
 import { useNavigate,useSearchParams } from 'react-router-dom';
 const Dispense =()=> {
 let navigator = useNavigate();
@@ -8,14 +8,14 @@ const id = searchParams.get("id");
 
 useEffect(()=>{
     let medicines
-    axiosInstance.get(`/fetch-order?id=${id}`).then((res) => {
+    apiGet(`/fetch-order?id=${id}`).then((res) => {
         medicines = res.data.medicine_id.map((medicine_id, i) => {
             return {
               medicine_id,
               quantity: res.data.quantity[i]
             };
           });
-          axiosInstance.post(`/dispense`, medicines).then(() => {
+          apiPost(`/dispense`, medicines).then(() => {
                 navigator("/thank");
     });
       });
