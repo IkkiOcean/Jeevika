@@ -83,7 +83,6 @@ const Slider = ({setter,id,maxUnit}) => {
       const progress =
         sliderInput.current.valueAsNumber / (sliderMaxValue.current - sliderMinValue.current);
       updatePosition(progress);
-console.log(progress)
     });
 
     const handlePointerMove = (event) => {

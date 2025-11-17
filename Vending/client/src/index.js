@@ -5,11 +5,12 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import Home from "./pages/home";
+import Home from "./pages/homePage";
+import ErrorPage from "./pages/error";
 import Scanner from "./pages/scanner";
 import Thank from "./pages/thank";
 import Dispense from "./pages/dispense";
-import { Counter, checkStock } from "./pages/counter";
+import { Counter, checkStock } from "./pages/medCounter";
 import Vital from "./pages/vitals";
 import { ThemeProvider } from './context/ThemeContext';
 import VitalReport from "./pages/vital-report";
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
     path: "counter",
     loader: checkStock,
     element: <Counter />,
+  },
+  {
+    path: "error",
+    element: <ErrorPage />,
   },
 ]);
 

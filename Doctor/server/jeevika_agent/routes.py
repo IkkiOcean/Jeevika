@@ -6,9 +6,11 @@ from jeevika_agent.models import Agent, Medicine, Patient
 from jeevika_agent.form import InventoryForm, LoginForm, UpdateAccountForm, RequestResetForm,ResetPasswordForm
 from flask_mail import Message
 import requests
-import img2pdf
+# import img2pdf
 from PIL import Image
 import os
+import base64
+import io
 from dotenv import load_dotenv
 load_dotenv()
 @app.route('/fetch_data/<int:machine_id>', methods = ['GET'])
@@ -90,8 +92,7 @@ def drop_patient_table():
         return jsonify({'message': 'Patient table dropped successfully.'}), 200
     except Exception as e:
         return jsonify({'message': 'Error dropping patient table', 'error': str(e)}), 400
-import base64
-import io
+
 @app.route('/upload_pdf', methods=['POST'])
 @cross_origin()
 def upload_pdf():

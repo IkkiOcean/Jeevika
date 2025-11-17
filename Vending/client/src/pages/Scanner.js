@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { QrReader } from "react-qr-reader-es6";
-import axios from "axios";
+import axiosInstance from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -50,7 +50,7 @@ function Scanner() {
 
   async function checkStock(id, needQty) {
     var medData = { isAvailable: false, data: {}, qty: 0 };
-    await axios.get(`http://127.0.0.1:5000/stock/${id}`).then((res) => {
+    await axiosInstance.get(`/stock/${id}`).then((res) => {
       var isAvailable = res.data.stock >= needQty;
       medData.data = res.data;
       medData.qty = needQty;
@@ -103,7 +103,7 @@ function Scanner() {
     }
     let sessionID;
     let orderID;
-    await axios.post(`http://127.0.0.1:5000/create-order`, order).then((res) => {
+    await axiosInstance.post(`/create-order`, order).then((res) => {
       sessionID = res.data.payment_session_id;
       orderID = res.data.order_id;
     });
@@ -119,14 +119,12 @@ function Scanner() {
     cashfree.checkout(checkoutOptions).then((result) => {
       if (result.error) {
         console.log("There is some payment error, Check for Payment Status");
-        console.log(result.error);
       }
       if (result.redirect) {
         console.log("Payment will be redirected");
       }
       if (result.paymentDetails) {
         console.log("Payment has been completed, Check for Payment Status");
-        console.log(result.paymentDetails.paymentMessage);
       }
     });
   }

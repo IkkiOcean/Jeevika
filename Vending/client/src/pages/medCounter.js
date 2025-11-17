@@ -2,7 +2,7 @@ import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import NumberInput from "../components/Quantity.js";
-import axios from "axios";
+import axiosInstance from "../utils/api.js";
 import { useLoaderData } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.js';
 import {
@@ -139,14 +139,13 @@ const Counter = () => {
     cashfree.checkout(checkoutOptions).then((result) => {
       if (result.error) {
         console.log("There is some payment error, Check for Payment Status");
-        console.log(result.error);
       }
       if (result.redirect) {
         console.log("Payment will be redirected");
       }
       if (result.paymentDetails) {
         console.log("Payment has been completed, Check for Payment Status");
-        console.log(result.paymentDetails.paymentMessage);
+        
       }
     });
   };
@@ -568,7 +567,7 @@ const Counter = () => {
 
 export const checkStock = async () => {
   var medData;
-  await axios.get(`http://127.0.0.1:5000/get_data/1`).then((res) => {
+  await axiosInstance.get(`/get_data/1`).then((res) => {
     medData = res.data;
   });
   return medData;
