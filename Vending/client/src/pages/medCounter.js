@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import NumberInput from "../components/Quantity.js";
+import NumberInput from "../components/numberInput.js";
 import axiosInstance from "../utils/api.js";
 import { useLoaderData } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.js';
@@ -13,7 +13,7 @@ import {
   CreditCard,
   Package,
 } from "lucide-react";
-import Header from "../components/Header.js";
+import Header from "../components/mainHeader.js";
 import { load } from "@cashfreepayments/cashfree-js";
 
 let cashfree;

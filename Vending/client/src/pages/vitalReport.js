@@ -12,7 +12,7 @@ import {
   Calendar,
   TrendingUp
 } from "lucide-react";
-import Header from "../components/Header";
+import Header from "../components/mainHeader";
 
 const VitalReport = () => {
     const location = useLocation();

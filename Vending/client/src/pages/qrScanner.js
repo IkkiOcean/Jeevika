@@ -14,7 +14,7 @@ import {
   Camera
 } from "lucide-react";
 import { load } from '@cashfreepayments/cashfree-js';
-import Header from "../components/Header";
+import Header from "../components/mainHeader";
 
 let cashfree;
 var initializeSDK = async function () {          
