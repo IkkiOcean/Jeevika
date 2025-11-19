@@ -27,9 +27,10 @@ initializeSDK();
 const Counter = () => {
   const data = useLoaderData();
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [amount, setAmount] = useState(0);
-  const [tempCount, setTempCount] = useState(0);
+  const [tempCount, setTempCount] = useState(1);
   const [currentItem, setCurrentItem] = useState(0);
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -68,7 +69,7 @@ const Counter = () => {
   };
 
   const handleOpen = (item) => {
-    setAmount(0);
+    setAmount(item.price);
     setCurrentItem(item);
     setOpen(true);
   };
@@ -76,7 +77,7 @@ const Counter = () => {
   const handleClose = () => {
     setOpen(false);
     setCurrentItem([]);
-    setTempCount(0);
+    setTempCount(1);
   };
 
   const handleCart = (item, quantity) => {
@@ -97,6 +98,11 @@ const Counter = () => {
   };
 
   const handleRedirect = async () => {
+  if (isProcessing) return; // Guard clause
+  
+  setIsProcessing(true);
+  
+  try {
     let medicines = [];
     cartItems.forEach((item) => {
       let data = {
@@ -111,16 +117,20 @@ const Counter = () => {
       };
       medicines.push(data);
     });
+    
     const order_detail = {
       customer_id: "12345",
       amount: totalPrice,
     };
+    
     const order = {
       orderDetail: order_detail,
       medicine: medicines,
     };
+    
     let sessionID;
     let orderID;
+    
     await axiosInstance
       .post(`/create-order`, order)
       .then((res) => {
@@ -136,6 +146,7 @@ const Counter = () => {
         height: "700px",
       },
     };
+    
     cashfree.checkout(checkoutOptions).then((result) => {
       if (result.error) {
         console.log("There is some payment error, Check for Payment Status");
@@ -145,10 +156,15 @@ const Counter = () => {
       }
       if (result.paymentDetails) {
         console.log("Payment has been completed, Check for Payment Status");
-        
       }
     });
-  };
+  } catch (error) {
+    console.error("Payment error:", error);
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
 
   const handleButtonChange = (id) => {
     var addButton = document.getElementById(`add-to-cart-${id}`);
@@ -415,39 +431,40 @@ const Counter = () => {
             </div>
 
             <button
-              onClick={handleRedirect}
-              disabled={!(totalPrice > 0)}
-              className={`
-                flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-base
-                transition-all duration-200
-                ${
-                  totalPrice > 0
-                    ? "active:scale-95 hover:scale-105"
-                    : "cursor-not-allowed opacity-50"
-                }
-              `}
-              style={
-                totalPrice > 0
-                  ? (isDark ? {
-                      background: "linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.3) 100%)",
-                      backdropFilter: "blur(15px)",
-                      border: "2px solid rgba(16, 185, 129, 0.4)",
-                      color: "white",
-                    } : {
-                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                      border: "2px solid #047857",
-                      color: "white",
-                    })
-                  : {
-                      background: isDark ? "rgba(100, 116, 139, 0.2)" : "#e2e8f0",
-                      border: `2px solid ${isDark ? "rgba(148, 163, 184, 0.3)" : "#cbd5e1"}`,
-                      color: isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(100, 116, 139, 0.5)",
-                    }
-              }
-            >
-              <CreditCard size={20} />
-              Proceed to Pay
-            </button>
+  onClick={handleRedirect}
+  disabled={!(totalPrice > 0) || isProcessing}
+  className={`
+    flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-base
+    transition-all duration-200
+    ${
+      totalPrice > 0 && !isProcessing
+        ? "active:scale-95 hover:scale-105"
+        : "cursor-not-allowed opacity-50"
+    }
+  `}
+  style={
+    totalPrice > 0 && !isProcessing
+      ? (isDark ? {
+          background: "linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.3) 100%)",
+          backdropFilter: "blur(15px)",
+          border: "2px solid rgba(16, 185, 129, 0.4)",
+          color: "white",
+        } : {
+          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+          border: "2px solid #047857",
+          color: "white",
+        })
+      : {
+          background: isDark ? "rgba(100, 116, 139, 0.2)" : "#e2e8f0",
+          border: `2px solid ${isDark ? "rgba(148, 163, 184, 0.3)" : "#cbd5e1"}`,
+          color: isDark ? "rgba(255, 255, 255, 0.5)" : "rgba(100, 116, 139, 0.5)",
+        }
+  }
+>
+  <CreditCard size={20} />
+  {isProcessing ? "Processing..." : "Proceed to Pay"}
+</button>
+
           </div>
         </div>
       </div>
@@ -571,7 +588,6 @@ export const checkStock = async () => {
     medData = res.data;
   });
   const medsSorted = medData.slice().sort((a, b) => {
-    console.log(a.address, b.address);
   if (a.address < b.address) return -1;
   if (a.address > b.address) return 1;
   return 0;
