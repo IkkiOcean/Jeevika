@@ -85,6 +85,7 @@ def get_data(machine_id):
             "medicine_name" : stock.medicines.medicine_name,
             "stock" : stock.stock_count,
             "price" : stock.medicines.price,
+            "address"   : stock.address,
             # "image" : stock.medicines.image
         }
         data_set.append(data)

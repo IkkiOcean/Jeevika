@@ -570,7 +570,14 @@ export const checkStock = async () => {
   await axiosInstance.get(`/get_data/1`).then((res) => {
     medData = res.data;
   });
-  return medData;
+  const medsSorted = medData.slice().sort((a, b) => {
+    console.log(a.address, b.address);
+  if (a.address < b.address) return -1;
+  if (a.address > b.address) return 1;
+  return 0;
+});
+
+  return medsSorted;
 };
 
 export { Counter };
