@@ -1,26 +1,11 @@
 [
     {
         "medicine_id": 2,
-        "quantity": 6
+        "quantity": 1
     },
     {
         "medicine_id": 1,
-        "quantity": 2
-    },
-    {
-        "medicine_id": 2,
-        "quantity": 6
-    },
-    {
-        "medicine_id": 1,
-        "quantity": 2
-    },
-    {
-        "medicine_id": 2,
-        "quantity": 6
-    },
-    {
-        "medicine_id": 1,
-        "quantity": 2
+        "quantity": 1
     }
+    
 ]

@@ -34,7 +34,6 @@ export const fetchApiConfig = async () => {
       data: config,
       timestamp: Date.now()
     }));
-
     return config;
   } catch (error) {
     console.error('Failed to fetch remote config:', error);

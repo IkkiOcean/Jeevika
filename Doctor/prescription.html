@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor's Prescription - Dr. PK Mishra</title>
+    <style>
+        /* General Styles */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+        }
+        .prescription-container { 
+            /* A4 width simulation */
+            width: 210mm; 
+            /* Centers the content on screen */
+            margin: 20px auto; 
+            background-color: white; 
+            border: 1px solid #ccc; 
+            padding: 30px; 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); 
+            /* Setting min-height to simulate A4 aspect ratio */
+            min-height: 287mm; 
+        }
+        
+        /* Header Styling */
+        .header-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .doctor-name { font-size: 26px; color: #003366; font-weight: bold; margin-bottom: 2px; }
+        .clinic-details { text-align: right; font-size: 14px; color: #003366; }
+        .clinic-details p { margin: 2px 0; }
+        .divider { height: 3px; background-color: #003366; margin: 15px 0; }
+        
+        /* Information Sections */
+        .patient-info { width: 100%; margin-bottom: 20px; font-size: 14px; }
+        .section-header { background-color: #003366; color: white; padding: 8px 10px; font-size: 16px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+        
+        /* Assessment Table */
+        .assessment-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .assessment-table th, .assessment-table td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
+        .assessment-table th { background-color: #e6f7ff; }
+        
+        /* Medication Section (Rx) */
+        .rx-symbol { font-size: 36px; color: #CC0000; font-weight: bold; margin-top: 15px; margin-bottom: 5px; }
+        .medication-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .medication-table th { background-color: #003366; color: white; padding: 12px 10px; }
+        .medication-table td { border: none; padding: 10px; border-bottom: 1px solid #eee; }
+        .medication-table tr:nth-child(even) { background-color: #f2f2f2; } /* Row Striping */
+
+        /* Advice and Footer */
+        .advice-list { list-style-type: disc; margin: 10px 0 0 20px; padding-left: 0; font-size: 14px; }
+        .footer-table { width: 100%; margin-top: 40px; }
+        .footer-table td { vertical-align: bottom; }
+        .signature { text-align: right; }
+        .qr-text { font-size: 10px; color: #999; margin-top: 5px; }
+        
+        /* A4 Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                margin: 0;
+            }
+            .prescription-container {
+                width: 210mm;
+                /* Standard A4 height, ensures correct pagination if content overflows */
+                min-height: 297mm; 
+                margin: 0;
+                border: none;
+                box-shadow: none;
+                padding: 10mm; /* Simulates print margins */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="prescription-container">
+    
+    <table class="header-table">
+        <tr>
+            <td style="width: 50%;">
+                <div class="doctor-name">Dr. PK Mishra</div>
+                <div style="font-size: 12px; color: #555;">MBBS/MD | Reg. No: 123</div>
+            </td>
+            <td style="width: 50%;">
+                <div class="clinic-details">
+                    <b>Saint Parmanand Hospital</b>
+                    <p>Civil Lines, New Delhi</p>
+                    <p>Ph: 1800-0981-9008 | Closed: Sunday</p>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <div class="divider"></div>
+
+    <table class="patient-info">
+        <tr>
+            <td style="width: 50%;"><b>Patient Name:</b> Vivek Prakash (Male)</td>
+            <td style="width: 50%;"><b>Date:</b> 24/11/2025</td>
+        </tr>
+        <tr>
+            <td><b>Age:</b> 21 Y</td>
+            <td><b>ID:</b> 1</td>
+        </tr>
+        <tr>
+            <td><b>Mobile:</b> 9116532218</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <div class="section-header">Clinical Assessment</div>
+    <table class="assessment-table">
+        <tr>
+            <th style="width: 50%;">Chief Complaints</th>
+            <th style="width: 50%;">Clinical Findings</th>
+        </tr>
+        <tr>
+            <td>• Frequent, dry cough<br>• Headache and body pain<br>• Stomach discomfort/burning sensation</td>
+            <td>• Mild dehydration<br>• Mild throat irritation</td>
+        </tr>
+        <tr>
+            <td colspan="2"><b>Diagnosis:</b> Acute Upper Respiratory Infection (URI) with Gastric Reflux and Dehydration</td>
+        </tr>
+    </table>
+
+    <div class="rx-symbol">Rx</div>
+    <table class="medication-table">
+        <tr>
+            <th style="width: 35%;">Medicine Name</th>
+            <th style="width: 45%;">Dosage / Instruction</th>
+            <th style="width: 20%;">Duration</th>
+        </tr>
+        
+        <tr>
+            <td>Alex Cough Syrup (100 ml)</td>
+            <td>10ml (2 tsp) three times a day</td>
+            <td>5 days</td>
+        </tr>
+        <tr>
+            <td>ORS (21.8 gm)</td>
+            <td>Dissolve 1 sachet in 1 liter of water. Drink throughout the day.</td>
+            <td>As needed</td>
+        </tr>
+    </table>
+
+    <div class="section-header">Advice</div>
+    <ul class="advice-list">
+        <li>Drink plenty of fluids/water</li>
+        <li>Complete bed rest</li>
+        <li>Avoid spicy and oily food</li>
+        <li>Follow up on: 30/11/2025</li>
+    </ul>
+
+    <table class="footer-table">
+        <tr>
+            <td style="width: 60%; text-align: left;">
+                <p style="font-weight: bold; margin-bottom: 5px;">Scan QR Code:</p>
+                <img src="QrJeevika2.png" alt="QR Code" style="width: 200px; height: 200px; border: 1px solid #ddd;">
+                <p class="qr-text">Scan for digital record</p>
+            </td>
+            <td style="width: 60%; text-align: right;">
+                <div class="signature">
+                    <br><br><br>
+                    <span style="border-top: 2px solid #000; padding-top: 5px; display: inline-block;">
+                        Dr. PK Mishra
+                    </span>
+                    <p style="font-size: 10px; color: #555;">(Signature)</p>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

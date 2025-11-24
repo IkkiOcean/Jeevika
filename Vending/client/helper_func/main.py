@@ -8,8 +8,8 @@ import requests
 # x = requests.post(url, json = myobj)
 
 # print(x.text)
-add_data(2,6)
-add_data(1,2)
+# add_data(2,6)
+# add_data(1,2)
 gen_qr()
 # delete_data()
 

@@ -12,19 +12,23 @@ const initializeAxiosInstance = async () => {
   const config = await fetchApiConfig();
   
   axiosInstance = axios.create({
-    baseURL: config.apiUrl,
+    baseURL: "http://localhost:8030",
     timeout: 50000,
   });
+  // axiosInstance = axios.create({
+  //   baseURL: config.apiUrl,
+  //   timeout: 50000,
+  // });
 
-  // Request interceptor
-  axiosInstance.interceptors.request.use(
-    async (requestConfig) => {
-      const latestConfig = await fetchApiConfig();
-      requestConfig.baseURL = latestConfig.apiUrl;
-      return requestConfig;
-    },
-    (error) => Promise.reject(error)
-  );
+  // // Request interceptor
+  // axiosInstance.interceptors.request.use(
+  //   async (requestConfig) => {
+  //     const latestConfig = await fetchApiConfig();
+  //     requestConfig.baseURL = latestConfig.apiUrl;
+  //     return requestConfig;
+  //   },
+  //   (error) => Promise.reject(error)
+  // );
 
   // Response interceptor with cache clearing on connection errors
   axiosInstance.interceptors.response.use(

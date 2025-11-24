@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import QrReader from "react-qr-reader-es6";
+import { useState, useEffect, useRef } from "react";
+import {QrReader} from "react-qr-reader";
 import axiosInstance from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext';
@@ -16,6 +16,7 @@ import {
 import { load } from '@cashfreepayments/cashfree-js';
 import Header from "../components/mainHeader";
 
+
 let cashfree;
 var initializeSDK = async function () {          
     cashfree = await load({
@@ -24,14 +25,20 @@ var initializeSDK = async function () {
 };
 initializeSDK();
 
+
 function Scanner() {
   const [isScanned, setIsScanned] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [medicines, setMedicines] = useState([]);
   const [loadingText, setLoadingText] = useState('');
   const { isDark } = useTheme();
-  let totalPrice = 0;
   const navigator = useNavigate();
+  
+  // Use ref to track scanning state - prevents re-renders and immediate locking
+  const isScanningRef = useRef(false);
+  const lastScannedRef = useRef(null);
+  
+  let totalPrice = 0;
 
   // Theme styles
   const theme = {
@@ -48,14 +55,15 @@ function Scanner() {
     scannerGlow: isDark ? "rgba(6, 182, 212, 0.4)" : "rgba(59, 130, 246, 0.3)"
   };
 
+
   useEffect(() => {
     return () => {
-      // Cleanup: Stop camera stream when component unmounts
-      if (navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Camera will be released automatically
-      }
+      // Cleanup: Reset refs on unmount
+      isScanningRef.current = false;
+      lastScannedRef.current = null;
     };
   }, []);
+
   async function checkStock(id, needQty) {
     var medData = { isAvailable: false, data: {}, qty: 0 };
     await axiosInstance.get(`/stock/${id}`).then((res) => {
@@ -67,27 +75,52 @@ function Scanner() {
     return medData;
   }
 
+
   async function loadData(result, error) {
     if (!!result) {
+      // Prevent duplicate scans using ref (synchronous check)
+      if (isScanningRef.current) {
+        return; // Already processing, ignore this scan
+      }
+
+      // Prevent scanning the same QR code again
+      const resultText = result?.text || result;
+      if (lastScannedRef.current === resultText) {
+        return; // Same QR code, ignore
+      }
+
+      // Lock scanning immediately
+      isScanningRef.current = true;
+      lastScannedRef.current = resultText;
+
       setLoading(true);
       setLoadingText("Processing prescription...");
-      var dd = JSON.parse(atob(result?.text));
-      var meds = [];
-      setMedicines(meds);
-      dd.map(async (d) => {
-        var med = await checkStock(d.medicine_id, d.quantity);
-        meds.push(med);
-        if (meds.length === dd.length) {
-          setMedicines(meds);
-          setIsScanned(true);
-          setLoading(false);
-        }
-      });
+
+      try {
+        var dd = JSON.parse(atob(resultText));
+        var meds = [];
+        setMedicines(meds);
+
+        // Use Promise.all for better async handling
+        const stockPromises = dd.map(d => checkStock(d.medicine_id, d.quantity));
+        const results = await Promise.all(stockPromises);
+        
+        setMedicines(results);
+        setIsScanned(true);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error processing QR code:", err);
+        setLoading(false);
+        // Reset scanning state on error to allow retry
+        isScanningRef.current = false;
+        lastScannedRef.current = null;
+      }
     }
     if (!!error) {
       console.info(error);
     }
   }
+
 
   const totalPriceofdata = () => {
     let y = 0;
@@ -99,6 +132,7 @@ function Scanner() {
     totalPrice = y;
     return y;
   }
+
 
   const handleRedirect = async() => {
     const order_detail = {
@@ -115,6 +149,7 @@ function Scanner() {
       sessionID = res.data.payment_session_id;
       orderID = res.data.order_id;
     });
+
 
     let checkoutOptions = {
       paymentSessionId: sessionID,
@@ -136,6 +171,15 @@ function Scanner() {
       }
     });
   }
+
+  const handleRescan = () => {
+    // Reset all scanning states
+    setIsScanned(false);
+    setMedicines([]);
+    isScanningRef.current = false;
+    lastScannedRef.current = null;
+  };
+
 
   return isLoading ? (
     // Modern Loading Screen
@@ -177,8 +221,10 @@ function Scanner() {
         </div>
       )}
 
+
       {/* Header */}
       <Header showBackButton={true} backTo="/" />
+
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto relative z-10 px-4 md:px-6 py-4 md:py-6">
@@ -204,6 +250,7 @@ function Scanner() {
               Review medicines and proceed to payment
             </p>
           </div>
+
 
           {/* Medicine List */}
           <div 
@@ -275,6 +322,7 @@ function Scanner() {
               </div>
             ))}
 
+
             {/* Total Section */}
             <div 
               className="p-4 md:p-5"
@@ -300,6 +348,7 @@ function Scanner() {
             </div>
           </div>
 
+
           {/* Out of Stock Warning */}
           {medicines.some(item => !item.isAvailable) && (
             <div 
@@ -315,6 +364,7 @@ function Scanner() {
               </p>
             </div>
           )}
+
 
           {/* Action Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -349,6 +399,7 @@ function Scanner() {
               <CreditCard size={20} />
               Proceed to Payment
             </button>
+
 
             <button
               onClick={() => navigator('/')}
@@ -389,8 +440,10 @@ function Scanner() {
         </div>
       )}
 
+
       {/* Header */}
       <Header showBackButton={true} backTo="/" />
+
 
       {/* Scanner Content */}
       <div className="flex-1 overflow-y-auto relative z-10">
@@ -420,6 +473,7 @@ function Scanner() {
             </p>
           </div>
 
+
           {/* Scanner Container */}
           <div className="relative w-full max-w-md mx-auto mb-4">
             <div 
@@ -429,25 +483,19 @@ function Scanner() {
                 border: `4px solid ${theme.scannerBorder}`
               }}
             >
-             <QrReader
-  constraints={{
-    facingMode: "environment",
-  }}
-  videoStyle={{
-    width: "100%",
-    height: "400px",
-    objectFit: "cover",
-  }}
-  onScan={async (result) => {
-    if (result) {
-      loadData(result, null);
-    }
-  }}
-  onError={(error) => {
-    console.error("QR Reader Error:", error);
-  }}
-  style={{ width: "100%" }}
-/>
+              {/* Only render QR reader if not yet scanned */}
+              {!isScanningRef.current && (
+                <QrReader
+                  constraints={{ facingMode: "environment" }}
+                  scanDelay={300}
+                  onResult={(result) => {
+                    if (result) loadData(result?.text || result, null);
+                  }}
+                  videoContainerStyle={{ width: '100%' }}
+                  videoStyle={{ width: "100%", height: "400px", objectFit: "cover" }}
+                />
+              )}
+
 
               
               {/* Scanning Overlay */}
@@ -507,6 +555,7 @@ function Scanner() {
                   />
                 </div>
 
+
                 {/* Bottom Hint */}
                 <div className="absolute bottom-4 left-0 right-0 text-center px-4">
                   <div 
@@ -529,6 +578,7 @@ function Scanner() {
               </div>
             </div>
 
+
             {/* Helper Text */}
             <div 
               className="mt-3 p-2.5 rounded-xl text-center"
@@ -548,6 +598,7 @@ function Scanner() {
         </div>
       </div>
 
+
       {/* CSS Animations */}
       <style>{`
         @keyframes scan {
@@ -558,5 +609,6 @@ function Scanner() {
     </div>
   );
 }
+
 
 export default Scanner;
