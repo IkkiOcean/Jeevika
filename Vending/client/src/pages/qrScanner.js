@@ -431,7 +431,7 @@ function Scanner() {
             >
              <QrReader
   constraints={{
-    facingMode: "environment",
+    facingMode: "user",
   }}
   videoStyle={{
     width: "100%",
