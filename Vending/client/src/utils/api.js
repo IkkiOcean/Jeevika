@@ -21,14 +21,14 @@ const initializeAxiosInstance = async () => {
   });
 
   // Request interceptor
-  axiosInstance.interceptors.request.use(
-    async (requestConfig) => {
-      const latestConfig = await fetchApiConfig();
-      requestConfig.baseURL = latestConfig.apiUrl;
-      return requestConfig;
-    },
-    (error) => Promise.reject(error)
-  );
+  // axiosInstance.interceptors.request.use(
+  //   async (requestConfig) => {
+  //     const latestConfig = await fetchApiConfig();
+  //     requestConfig.baseURL = latestConfig.apiUrl;
+  //     return requestConfig;
+  //   },
+  //   (error) => Promise.reject(error)
+  // );
 
   // Response interceptor with cache clearing on connection errors
   axiosInstance.interceptors.response.use(
