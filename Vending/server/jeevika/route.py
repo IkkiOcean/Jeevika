@@ -2,20 +2,19 @@ from flask import Flask, request,jsonify
 from jeevika import app, db
 from flask_cors import cross_origin
 from jeevika.dispense import dispense_med
-from jeevika.models import Stock, Bill, Medicine, Order
+from jeevika.models import Stock, Medicine, Order
 from jeevika.utils import process_bill
 from jeevika.gemini import getReport
 from datetime import datetime
 import pytz
-import base64
 import os
 from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.api_client import Cashfree
 from cashfree_pg.models.customer_details import CustomerDetails
 from cashfree_pg.models.order_meta import OrderMeta
 
-Cashfree.XClientId = "TEST10198495e07a6b117a8e0896e4ab59489101"
-Cashfree.XClientSecret = "cfsk_ma_test_8265d1ffb19d223b33d38d8df367862d_e67ab70f"
+Cashfree.XClientId = os.environ.get('CASHFREE_APPID')
+Cashfree.XClientSecret = os.environ.get('CASHFREE_SECRET')
 Cashfree.XEnvironment = Cashfree.SANDBOX
 x_api_version = "2023-08-01"
 # from jeevika.sensor_control import startSensor
@@ -61,7 +60,7 @@ def handle_medicine():
     process_bill(item_list)
     return "medicine recieved", 204
 
-def medicine_alaram(med_id, mec_id):
+def medicine_alarm(med_id, mec_id):
     try:
         data = { 
             "machine_id" : mec_id,

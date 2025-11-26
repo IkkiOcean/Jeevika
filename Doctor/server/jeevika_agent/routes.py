@@ -297,7 +297,7 @@ Take care and get well soon!
 Warm regards,  
 Jeevika
 """
-        client = vonage.Client(key="f3089296", secret="P7GCpDlnhMovkuOt")
+        client = vonage.Client(key="f3089296", secret="")
         sms = vonage.Sms(client)
         responseData = sms.send_message(
         {

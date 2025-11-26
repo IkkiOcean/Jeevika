@@ -99,11 +99,11 @@ def start_localhost_run_tunnel():
 if __name__ == '__main__':
     CORS(app)
     
-    print("=" * 70)
-    print("🚀 JEEVIKA API SERVER")
-    print("=" * 70)
-    print(f"📍 Local:  http://localhost:{PORT}")
-    print("🌐 Public: Initializing tunnel...")
+    print("=" * 70  + "\n")
+    print("\n🚀 JEEVIKA API SERVER\n")
+    print("=" * 70  + "\n")
+    print(f"📍 Local:  http://localhost:{PORT}\n")
+    print("🌐 Public: Initializing tunnel...\n")
     print("=" * 70 + "\n")
     
     # Start tunnel in background
